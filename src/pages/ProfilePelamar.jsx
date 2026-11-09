@@ -18,13 +18,13 @@ export default function ProfilePelamar() {
 
   useEffect(() => {
     if (user) {
-      if (user.nama !== undefined) setName(user.nama);
-      if (user.posisi !== undefined) setHeadline(user.posisi);
-      if (user.email !== undefined) setEmail(user.email);
-      if (user.telepon !== undefined) setPhone(user.telepon);
-      if (user.lokasi !== undefined) setLocation(user.lokasi);
-      if (user.linkedin !== undefined) setLinkedin(user.linkedin);
-      if (user.ringkasan !== undefined) setSummary(user.ringkasan);
+      if (user.nama !== undefined) setName((prev) => (user.nama !== prev ? user.nama : prev));
+      if (user.posisi !== undefined) setHeadline((prev) => (user.posisi !== prev ? user.posisi : prev));
+      if (user.email !== undefined) setEmail((prev) => (user.email !== prev ? user.email : prev));
+      if (user.telepon !== undefined) setPhone((prev) => (user.telepon !== prev ? user.telepon : prev));
+      if (user.lokasi !== undefined) setLocation((prev) => (user.lokasi !== prev ? user.lokasi : prev));
+      if (user.linkedin !== undefined) setLinkedin((prev) => (user.linkedin !== prev ? user.linkedin : prev));
+      if (user.ringkasan !== undefined) setSummary((prev) => (user.ringkasan !== prev ? user.ringkasan : prev));
     }
   }, [user]);
 

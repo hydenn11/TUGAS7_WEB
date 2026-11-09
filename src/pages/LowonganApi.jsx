@@ -87,8 +87,8 @@ export default function LowonganApi() {
   const { user, savedJobIds, toggleSaveJob, appliedJobs: contextAppliedJobs, applyJob } = useAuth();
 
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(() => debugState === 'loading' || !debugState);
+  const [error, setError] = useState(() => (debugState === 'error' ? 'Gagal menghubungi server API eksternal (HTTP 404: Not Found).' : null));
 
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState('Semua');
@@ -167,14 +167,7 @@ export default function LowonganApi() {
   };
 
   useEffect(() => {
-    if (debugState === 'loading') {
-      setLoading(true);
-      setError(null);
-      return;
-    }
-    if (debugState === 'error') {
-      setLoading(false);
-      setError('Gagal menghubungi server API eksternal (HTTP 404: Not Found).');
+    if (debugState === 'loading' || debugState === 'error') {
       return;
     }
     fetchJobs();
