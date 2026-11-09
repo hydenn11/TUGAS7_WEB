@@ -25,14 +25,6 @@ Proyek ini dikembangkan secara konsisten dari pekan ke pekan melalui 3 repositor
 
 ---
 
-## 👥 Identitas Kelompok & Pembagian Peran
-* **Nama Tim / Kelompok**: Kelompok AYOKERJA!
-* **Daftar Anggota & Kontribusi**:
-  - **Luthfi Ramadhan** (`hydenn11`): Frontend Architect, Setup React + Vite, Routing React Router DOM, Integrasi REST API JSONPlaceholder, State Management `AuthContext`, Form Validation & Filtering.
-  - *(Anggota Kelompok Lainnya)*: Desain UI/UX & Responsive Breakpoints, Pengujian Fitur Dashboard Perusahaan, Penyusunan Laporan Dokumentasi & Screenshot Antarmuka.
-
----
-
 ## 🚀 Fitur Utama & Daftar 8 Halaman Terkoneksi
 
 Aplikasi memiliki **8 Halaman Utama** yang saling terhubung melalui navigasi terpadu:
@@ -135,43 +127,6 @@ Sesuai spesifikasi Tugas Besar 1 (Rubrik 4.5), **seluruh data dinamis dalam apli
 
 ---
 
-## 📝 Jawaban Pertanyaan Evaluasi Praktikum
-
-### Pertanyaan 5.a: Mengapa Anda memilih API/endpoint tersebut?
-**Jawaban:**
-Dalam pengujian konsumsi API eksternal, endpoint yang dipilih adalah:
-```
-https://jsonplaceholder.typicode.com/posts?_limit=9
-```
-Alasan pemilihan:
-1. **Rekomendasi Resmi Modul**: Merupakan *mock REST API* standar industri yang stabil dan disarankan dalam lembar tugas.
-2. **Bebas Hambatan CORS**: Menyediakan header `Access-Control-Allow-Origin: *` bawaan, sehingga request dari browser `localhost` dijamin aman tanpa blokir keamanan lintas domain.
-3. **Zero Configuration**: Bebas token/API key rahasia, memastikan dosen dan asisten dapat langsung menguji aplikasi tanpa setup `.env`.
-4. **Struktur Data Ideal**: Objek JSON memiliki `id` (unik untuk React key), `title` (dipetakan menjadi posisi kerja), dan `body` (dipetakan menjadi ringkasan deskripsi tugas).
-5. **Dukungan Pagination/Limit**: Parameter `_limit=9` membatasi data tepat 9 item untuk tata letak kartu simetris 3 kolom.
-
----
-
-### Pertanyaan 5.b: Bagaimana alur penanganan loading dan error pada kode Anda?
-**Jawaban:**
-Implementasi pada komponen `LowonganApi.jsx`:
-1. **State Hooks**:
-   - `jobs` (`useState([])`): Menyimpan data yang berhasil di-fetch.
-   - `loading` (`useState(true)`): Menandakan proses request jaringan sedang berjalan.
-   - `error` (`useState(null)`): Menyimpan pesan galat apabila terjadi kegagalan jaringan atau respons status HTTP di luar kode 200–299.
-2. **Fungsi Asinkron `fetchJobs`**:
-   - Di awal, `setLoading(true)` dan `setError(null)` diaktifkan.
-   - Blok `try` melakukan `fetch(endpoint)`.
-   - Validasi respons menggunakan `if (!response.ok) throw new Error(...)`.
-   - Blok `catch(err)` menangkap kegagalan dan menyimpan pesan error ke state `error`.
-   - Blok `finally` memastikan `setLoading(false)` terpanggil dalam kondisi apa pun.
-3. **Penyajian Tampilan (Conditional Rendering)**:
-   - **Loading State**: Menampilkan Skeleton Loader kartu lowongan beranimasi denyut (*pulse*).
-   - **Error State**: Menampilkan banner error interaktif lengkap dengan pesan status HTTP dan tombol **Coba Lagi** (*Retry*) untuk mere-fetch data.
-   - **Success State**: Menampilkan data ke dalam grid kartu interaktif dengan `key={job.id}`.
-
----
-
 ## 📂 Struktur Direktori Proyek
 
 ```
@@ -199,5 +154,3 @@ TUGAS_7/
 └── vite.config.js           # Konfigurasi bundler Vite
 ```
 
----
-*Proyek ini diajukan untuk memenuhi persyaratan evaluasi Tugas Besar I (UTS) Perancangan dan Pemrograman Web.*
