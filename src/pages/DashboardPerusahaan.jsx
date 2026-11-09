@@ -12,11 +12,11 @@ export default function DashboardPerusahaan() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Active Tab: 'dashboard' | 'jobs' | 'create-job' | 'applicants' | 'profile'
-  const validTabs = ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'];
+  const validTabs = useMemo(() => ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'], []);
   const tabFromUrl = searchParams.get('tab');
 
   const [activeTab, setActiveTabState] = useState(() => {
-    if (tabFromUrl && validTabs.includes(tabFromUrl)) {
+    if (tabFromUrl && ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'].includes(tabFromUrl)) {
       return tabFromUrl;
     }
     return 'dashboard';
@@ -28,12 +28,16 @@ export default function DashboardPerusahaan() {
   };
 
   useEffect(() => {
-    if (tabFromUrl && validTabs.includes(tabFromUrl) && tabFromUrl !== activeTab) {
-      setActiveTabState(tabFromUrl);
-    } else if (!tabFromUrl && activeTab !== 'dashboard') {
-      setActiveTabState('dashboard');
-    }
-  }, [tabFromUrl]);
+    setActiveTabState((prev) => {
+      if (tabFromUrl && validTabs.includes(tabFromUrl) && tabFromUrl !== prev) {
+        return tabFromUrl;
+      }
+      if (!tabFromUrl && prev !== 'dashboard') {
+        return 'dashboard';
+      }
+      return prev;
+    });
+  }, [tabFromUrl, validTabs]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);

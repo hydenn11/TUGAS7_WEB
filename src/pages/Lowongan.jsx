@@ -26,7 +26,7 @@ import FormulirLamarLowongan from '../components/FormulirLamarLowongan';
 import RincianLamaranTerkirim from '../components/RincianLamaranTerkirim';
 import { ALL_JOBS } from '../data/jobsList';
 
-export default function Lowongan({ jobs: propJobs }) {
+export default function Lowongan({ jobs: propJobs, loadingJobs = false }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -65,27 +65,26 @@ export default function Lowongan({ jobs: propJobs }) {
   const initialQ = searchParams.get('q') || '';
   const initialCategory = searchParams.get('kategori') || '';
   const initialLocation = searchParams.get('lokasi') || '';
-  const initialFilter = searchParams.get('filter') || '';
+  const filterParam = searchParams.get('filter');
 
   const [search, setSearch] = useState(initialQ);
   const [categoryFilter, setCategoryFilter] = useState(initialCategory);
   const [locationFilter, setLocationFilter] = useState(initialLocation);
   const [typeFilter, setTypeFilter] = useState('');
 
-  const [activeTab, setActiveTab] = useState(
-    initialFilter === 'saved' ? 'saved' : initialFilter === 'applied' ? 'applied' : 'all'
-  );
+  const [activeTab, setActiveTab] = useState(() => {
+    if (filterParam === 'saved') return 'saved';
+    if (filterParam === 'applied') return 'applied';
+    return 'all';
+  });
 
   useEffect(() => {
-    const filter = searchParams.get('filter');
-    if (filter === 'saved') {
-      setActiveTab('saved');
-    } else if (filter === 'applied') {
-      setActiveTab('applied');
-    } else if (!filter && searchParams.size === 0) {
-      setActiveTab('all');
+    if (filterParam === 'saved' || filterParam === 'applied') {
+      setActiveTab((prev) => (prev !== filterParam ? filterParam : prev));
+    } else if (!filterParam && searchParams.size === 0) {
+      setActiveTab((prev) => (prev !== 'all' ? 'all' : prev));
     }
-  }, [searchParams]);
+  }, [filterParam, searchParams]);
 
   const [authModal, setAuthModal] = useState({
     isOpen: false,
@@ -327,16 +326,24 @@ export default function Lowongan({ jobs: propJobs }) {
             onExplore={() => handleTabChange('all')}
           />
         ) : (
-          <DaftarLowongan
-            jobs={filteredJobs}
-            savedJobIds={savedJobIds}
-            appliedJobs={appliedJobs}
-            onOpenDetail={openJobDetail}
-            onToggleSave={handleSave}
-            onApply={handleApplyClick}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-          />
+          <>
+            {loadingJobs && (
+              <div className="mb-4 p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold text-teal-800 animate-pulse">
+                <i className="fa-solid fa-arrows-rotate fa-spin text-teal-600"></i>
+                <span>Memperbarui data lowongan dari sumber mock API...</span>
+              </div>
+            )}
+            <DaftarLowongan
+              jobs={filteredJobs}
+              savedJobIds={savedJobIds}
+              appliedJobs={appliedJobs}
+              onOpenDetail={openJobDetail}
+              onToggleSave={handleSave}
+              onApply={handleApplyClick}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+            />
+          </>
         )}
       </main>
 

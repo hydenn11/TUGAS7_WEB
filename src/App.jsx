@@ -18,7 +18,7 @@ import { ALL_JOBS } from './data/jobsList';
 function AppContent() {
   const location = useLocation();
 
-  const [jobs] = useState(() => {
+  const [jobs, setJobs] = useState(() => {
     const saved = localStorage.getItem('ayokerja_jobs_state');
     if (saved) {
       try {
@@ -29,6 +29,44 @@ function AppContent() {
     }
     return ALL_JOBS;
   });
+
+  const [loadingJobs, setLoadingJobs] = useState(false);
+
+  // Fetch data lowongan dari mock API /data/jobs.json
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadJobsFromApi = async () => {
+      try {
+        setLoadingJobs(true);
+        const res = await fetch('/data/jobs.json');
+        if (res.ok) {
+          const apiJobs = await res.json();
+          if (isMounted && Array.isArray(apiJobs) && apiJobs.length > 0) {
+            setJobs((prevJobs) => {
+              // Pertahankan jika ada custom job yang baru ditambahkan via company-dashboard (id > 9 atau string)
+              const customJobs = (prevJobs || []).filter(
+                (j) => !apiJobs.some((aj) => aj.id === j.id)
+              );
+              const merged = [...apiJobs, ...customJobs];
+              localStorage.setItem('ayokerja_jobs_state', JSON.stringify(merged));
+              return merged;
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Gagal memuat /data/jobs.json, fallback ke state lokal:', err);
+      } finally {
+        if (isMounted) setLoadingJobs(false);
+      }
+    };
+
+    loadJobsFromApi();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('ayokerja_jobs_state', JSON.stringify(jobs));
@@ -46,7 +84,7 @@ function AppContent() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Beranda />} />
-          <Route path="/jobs" element={<Lowongan jobs={jobs} />} />
+          <Route path="/jobs" element={<Lowongan jobs={jobs} loadingJobs={loadingJobs} />} />
           <Route path="/lowongan-api" element={<LowonganApi />} />
           <Route path="/companies" element={<Perusahaan />} />
           <Route path="/login-pelamar" element={<LoginPelamar />} />

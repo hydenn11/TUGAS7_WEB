@@ -14,7 +14,7 @@ export default function LoginPelamar() {
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam === 'register' || tabParam === 'login') {
-      setActiveTab(tabParam);
+      setActiveTab((prev) => (prev !== tabParam ? tabParam : prev));
     }
   }, [searchParams]);
 
