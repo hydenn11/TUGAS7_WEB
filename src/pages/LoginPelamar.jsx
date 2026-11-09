@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { safeSetStorageItem } from '../utils/storage';
 
 export default function LoginPelamar() {
   const [searchParams] = useSearchParams();
@@ -51,7 +52,7 @@ export default function LoginPelamar() {
     };
     if (regEmail) registeredUsers[regEmail.trim().toLowerCase()] = userData;
     if (regUsername) registeredUsers[regUsername.trim().toLowerCase()] = userData;
-    localStorage.setItem('ayokerja_registered_pelamar', JSON.stringify(registeredUsers));
+    safeSetStorageItem('ayokerja_registered_pelamar', registeredUsers);
 
     alert(`Pendaftaran Akun Pelamar atas nama ${regFullName} Berhasil!\nSilahkan masuk pada halaman masuk untuk melanjutkan.`);
     setLoginEmail(regEmail || regUsername);
@@ -119,8 +120,9 @@ export default function LoginPelamar() {
           {activeTab === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email atau Username</label>
+                <label htmlFor="loginEmailPelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email atau Username</label>
                 <input
+                  id="loginEmailPelamar"
                   type="text"
                   required
                   value={loginEmail}
@@ -132,13 +134,14 @@ export default function LoginPelamar() {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-bold text-slate-700">Kata Sandi</label>
+                  <label htmlFor="loginPasswordPelamar" className="block text-xs font-bold text-slate-700">Kata Sandi</label>
                   <a href="#" onClick={(e) => { e.preventDefault(); alert('Instruksi pemulihan kata sandi telah dikirim ke email terdaftar.'); }} className="text-[11px] font-semibold text-[#16B3A3] hover:underline">
                     Lupa Sandi?
                   </a>
                 </div>
                 <div className="relative">
                   <input
+                    id="loginPasswordPelamar"
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={loginPassword}
@@ -157,8 +160,8 @@ export default function LoginPelamar() {
               </div>
 
               <div className="flex items-center justify-between text-xs pt-1">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-600">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#16B3A3] focus:ring-[#16B3A3] border-slate-300" />
+                <label htmlFor="rememberMePelamar" className="flex items-center gap-2 cursor-pointer text-slate-600">
+                  <input id="rememberMePelamar" type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#16B3A3] focus:ring-[#16B3A3] border-slate-300 cursor-pointer" />
                   <span>Ingat saya di perangkat ini</span>
                 </label>
               </div>
@@ -175,8 +178,9 @@ export default function LoginPelamar() {
           {activeTab === 'register' && (
             <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Username Pelamar *</label>
+                <label htmlFor="regUsernamePelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Username Pelamar *</label>
                 <input
+                  id="regUsernamePelamar"
                   type="text"
                   required
                   value={regUsername}
@@ -187,8 +191,9 @@ export default function LoginPelamar() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap Sesuai KTP *</label>
+                <label htmlFor="regFullNamePelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap Sesuai KTP *</label>
                 <input
+                  id="regFullNamePelamar"
                   type="text"
                   required
                   value={regFullName}
@@ -199,8 +204,9 @@ export default function LoginPelamar() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email Aktif *</label>
+                <label htmlFor="regEmailPelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email Aktif *</label>
                 <input
+                  id="regEmailPelamar"
                   type="email"
                   required
                   value={regEmail}
@@ -211,8 +217,9 @@ export default function LoginPelamar() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Baru *</label>
+                <label htmlFor="regPasswordPelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Baru *</label>
                 <input
+                  id="regPasswordPelamar"
                   type="password"
                   required
                   value={regPassword}

@@ -57,8 +57,9 @@ export default function FormulirLamarLowongan({
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap *</label>
+                <label htmlFor="applicant-full-name" className="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap *</label>
                 <input
+                  id="applicant-full-name"
                   type="text"
                   required
                   value={candidateName}
@@ -67,8 +68,9 @@ export default function FormulirLamarLowongan({
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Email Aktif *</label>
+                <label htmlFor="applicant-email" className="block text-xs font-semibold text-slate-600 mb-1">Email Aktif *</label>
                 <input
+                  id="applicant-email"
                   type="email"
                   required
                   value={candidateEmail}
@@ -78,8 +80,9 @@ export default function FormulirLamarLowongan({
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Nomor WhatsApp / Telepon *</label>
+              <label htmlFor="applicant-phone" className="block text-xs font-semibold text-slate-600 mb-1">Nomor WhatsApp / Telepon *</label>
               <input
+                id="applicant-phone"
                 type="tel"
                 required
                 value={candidatePhone}
@@ -95,52 +98,54 @@ export default function FormulirLamarLowongan({
               2. Lampiran Dokumen Resume / CV
             </h3>
             <div className="space-y-2">
-              <label
-                className={`flex items-start gap-3 p-3 rounded-2xl border cursor-pointer transition-all ${
+              <div
+                className={`flex items-start gap-3 p-3 rounded-2xl border transition-all ${
                   resumeOption === 'profile'
                     ? 'border-[#16B3A3] bg-teal-50/30'
                     : 'border-slate-200 hover:bg-slate-50'
                 }`}
               >
                 <input
+                  id="resumeOptProfile"
                   type="radio"
                   name="resumeOpt"
                   value="profile"
                   checked={resumeOption === 'profile'}
                   onChange={() => setResumeOption('profile')}
-                  className="mt-1 text-[#16B3A3] focus:ring-[#16B3A3]"
+                  className="mt-1 text-[#16B3A3] focus:ring-[#16B3A3] cursor-pointer"
                 />
-                <div className="text-xs">
-                  <div className="font-bold text-[#00193F] flex items-center gap-1.5">
+                <label htmlFor="resumeOptProfile" className="text-xs cursor-pointer flex-1">
+                  <span className="font-bold text-[#00193F] flex items-center gap-1.5">
                     <i className="fa-solid fa-id-card text-[#16B3A3]"></i>
                     Gunakan Profil Terdaftar AYOKERJA!
-                  </div>
-                  <p className="text-slate-500 mt-0.5 text-[11px] leading-relaxed">
+                  </span>
+                  <span className="text-slate-500 mt-0.5 text-[11px] leading-relaxed block">
                     Sistem otomatis merangkum data pendidikan, ringkasan keahlian, dan riwayat dari profil akun <span className="font-semibold text-slate-700">{user?.nama || 'Anda'}</span>.
-                  </p>
-                </div>
-              </label>
+                  </span>
+                </label>
+              </div>
 
-              <label
-                className={`flex items-start gap-3 p-3 rounded-2xl border cursor-pointer transition-all ${
+              <div
+                className={`flex items-start gap-3 p-3 rounded-2xl border transition-all ${
                   resumeOption === 'upload'
                     ? 'border-[#16B3A3] bg-teal-50/30'
                     : 'border-slate-200 hover:bg-slate-50'
                 }`}
               >
                 <input
+                  id="resumeOptUpload"
                   type="radio"
                   name="resumeOpt"
                   value="upload"
                   checked={resumeOption === 'upload'}
                   onChange={() => setResumeOption('upload')}
-                  className="mt-1 text-[#16B3A3] focus:ring-[#16B3A3]"
+                  className="mt-1 text-[#16B3A3] focus:ring-[#16B3A3] cursor-pointer"
                 />
                 <div className="text-xs flex-1">
-                  <div className="font-bold text-[#00193F] flex items-center gap-1.5">
+                  <label htmlFor="resumeOptUpload" className="font-bold text-[#00193F] flex items-center gap-1.5 cursor-pointer">
                     <i className="fa-solid fa-file-arrow-up text-[#16B3A3]"></i>
                     Unggah Berkas CV Baru (PDF/DOC)
-                  </div>
+                  </label>
                   <div className="mt-2">
                     <div className="flex items-center gap-2">
                       <label
@@ -165,15 +170,16 @@ export default function FormulirLamarLowongan({
                     <span className="text-[10px] text-slate-400 block mt-1">Maksimal 5MB (.PDF, .DOC, .DOCX)</span>
                   </div>
                 </div>
-              </label>
+              </div>
             </div>
           </div>
 
           <div className="space-y-1.5 pt-2 border-t border-slate-100">
-            <label className="block text-xs font-bold text-slate-700">
+            <label htmlFor="applicant-cover-letter" className="block text-xs font-bold text-slate-700">
               Surat Pengantar / Catatan untuk Rekruter (Opsional)
             </label>
             <textarea
+              id="applicant-cover-letter"
               rows="3"
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
@@ -184,8 +190,9 @@ export default function FormulirLamarLowongan({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Tautan Portofolio / LinkedIn</label>
+              <label htmlFor="applicant-portfolio-url" className="block text-xs font-bold text-slate-700 mb-1">Tautan Portofolio / LinkedIn</label>
               <input
+                id="applicant-portfolio-url"
                 type="url"
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
@@ -194,8 +201,9 @@ export default function FormulirLamarLowongan({
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Ekspektasi Gaji Bersih</label>
+              <label htmlFor="applicant-expected-salary" className="block text-xs font-bold text-slate-700 mb-1">Ekspektasi Gaji Bersih</label>
               <input
+                id="applicant-expected-salary"
                 type="text"
                 value={expectedSalary}
                 onChange={(e) => setExpectedSalary(e.target.value)}
@@ -215,10 +223,10 @@ export default function FormulirLamarLowongan({
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 hover:shadow-lg"
+              className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#00193F] to-[#16B3A3] hover:opacity-95 shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 cursor-pointer"
             >
               <i className="fa-solid fa-paper-plane text-[11px]"></i>
-              <span>Kirim Berkas Lamaran</span>
+              <span>Kirimkan Lamaran Sekarang</span>
             </button>
           </div>
         </form>

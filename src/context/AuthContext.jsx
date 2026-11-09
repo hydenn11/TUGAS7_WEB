@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { safeSetStorageItem } from '../utils/storage';
 
 const AuthContext = createContext();
 
@@ -79,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      safeSetStorageItem(STORAGE_KEY, user);
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
@@ -88,8 +89,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (user && user.role === 'pelamar') {
       const userKey = getUserKey(user);
-      localStorage.setItem(`${SAVED_JOBS_KEY}_${userKey}`, JSON.stringify(savedJobIds));
-      localStorage.setItem(`${SAVED_JOB_DETAILS_KEY}_${userKey}`, JSON.stringify(savedJobDetails));
+      safeSetStorageItem(`${SAVED_JOBS_KEY}_${userKey}`, savedJobIds);
+      safeSetStorageItem(`${SAVED_JOB_DETAILS_KEY}_${userKey}`, savedJobDetails);
     }
   }, [savedJobIds, savedJobDetails, user]);
 
@@ -180,7 +181,7 @@ export const AuthProvider = ({ children }) => {
         const savedProfiles = JSON.parse(localStorage.getItem('ayokerja_company_profiles') || '{}');
         const compKey = (updated.email || updated.namaPerusahaan || 'default').toLowerCase();
         savedProfiles[compKey] = { ...savedProfiles[compKey], ...fields };
-        localStorage.setItem('ayokerja_company_profiles', JSON.stringify(savedProfiles));
+        safeSetStorageItem('ayokerja_company_profiles', savedProfiles);
       } catch (e) {
         console.error(e);
       }
@@ -210,7 +211,7 @@ export const AuthProvider = ({ children }) => {
           linkedin: updated.linkedin,
           ringkasan: updated.ringkasan,
         };
-        localStorage.setItem('ayokerja_user_profiles', JSON.stringify(savedProfiles));
+        safeSetStorageItem('ayokerja_user_profiles', savedProfiles);
       } catch (e) {
         console.error(e);
       }

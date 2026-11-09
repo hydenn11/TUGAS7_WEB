@@ -340,7 +340,8 @@ export default function Beranda() {
 
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 text-xs">
               {categoryPills.map((pill) => (
-                <span
+                <button
+                  type="button"
                   key={pill}
                   onClick={() => setActiveCategoryPill(pill)}
                   className={`px-3.5 py-1.5 rounded-lg font-semibold shrink-0 cursor-pointer transition-colors ${activeCategoryPill === pill
@@ -349,7 +350,7 @@ export default function Beranda() {
                     }`}
                 >
                   {pill}
-                </span>
+                </button>
               ))}
             </div>
           </div>

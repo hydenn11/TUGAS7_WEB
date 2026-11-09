@@ -10,6 +10,7 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
           type="button"
           onClick={onClose}
           className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors"
+          title="Tutup Modal"
         >
           <i className="fa-solid fa-xmark text-sm"></i>
         </button>
@@ -18,8 +19,9 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
 
         <form onSubmit={onSave} className="space-y-4 text-xs sm:text-sm">
           <div>
-            <label className="block font-bold text-slate-700 mb-1">Judul Posisi</label>
+            <label htmlFor="edit-job-title" className="block font-bold text-slate-700 mb-1">Judul Posisi</label>
             <input
+              id="edit-job-title"
               type="text"
               required
               value={job.title}
@@ -30,8 +32,9 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Gaji Min (Juta)</label>
+              <label htmlFor="edit-job-min-salary" className="block font-bold text-slate-700 mb-1">Gaji Min (Juta)</label>
               <input
+                id="edit-job-min-salary"
                 type="number"
                 value={job.minSalary}
                 onChange={(e) => onChange({ ...job, minSalary: e.target.value })}
@@ -39,8 +42,9 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Gaji Max (Juta)</label>
+              <label htmlFor="edit-job-max-salary" className="block font-bold text-slate-700 mb-1">Gaji Max (Juta)</label>
               <input
+                id="edit-job-max-salary"
                 type="number"
                 value={job.maxSalary}
                 onChange={(e) => onChange({ ...job, maxSalary: e.target.value })}
@@ -51,8 +55,9 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Status Publikasi</label>
+              <label htmlFor="edit-job-status" className="block font-bold text-slate-700 mb-1">Status Publikasi</label>
               <select
+                id="edit-job-status"
                 value={job.status}
                 onChange={(e) => onChange({ ...job, status: e.target.value })}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 bg-white"
@@ -64,8 +69,9 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Batas Waktu</label>
+              <label htmlFor="edit-job-deadline" className="block font-bold text-slate-700 mb-1">Batas Waktu</label>
               <input
+                id="edit-job-deadline"
                 type="date"
                 value={job.deadline}
                 onChange={(e) => onChange({ ...job, deadline: e.target.value })}
@@ -74,17 +80,17 @@ export default function FormulirEditLowongan({ isOpen, job, onClose, onChange, o
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-3">
+          <div className="flex items-center justify-end gap-3 pt-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-slate-500 font-semibold text-xs hover:bg-slate-100"
+              className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-[#16B3A3] text-white font-bold text-xs hover:bg-[#109485]"
+              className="px-5 py-2 rounded-xl bg-[#16B3A3] text-white text-xs font-bold shadow-md hover:bg-[#129486]"
             >
               Simpan Perubahan
             </button>

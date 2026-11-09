@@ -283,6 +283,7 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
+                <span className="sr-only">Tampilkan Estimasi Gaji ke Publik</span>
                 <input
                   type="checkbox"
                   checked={newJobShowSalary}

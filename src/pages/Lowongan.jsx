@@ -40,7 +40,7 @@ export default function Lowongan({ jobs: propJobs, loadingJobs = false }) {
         if (savedJobDetails && savedJobDetails[id]) {
           return savedJobDetails[id];
         }
-        const num = parseInt(id.replace('global-', ''), 10) || 1;
+        const num = Number.parseInt(id.replace('global-', ''), 10) || 1;
         const meta = GLOBAL_METAS[(num - 1) % GLOBAL_METAS.length];
         return {
           id,

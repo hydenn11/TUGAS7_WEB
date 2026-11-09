@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { safeSetStorageItem } from '../utils/storage';
 
 export default function LoginPerusahaan() {
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
@@ -67,7 +68,7 @@ export default function LoginPerusahaan() {
         telepon: regPhone,
         password: regPassword,
       };
-      localStorage.setItem('ayokerja_registered_perusahaan', JSON.stringify(registered));
+      safeSetStorageItem('ayokerja_registered_perusahaan', registered);
 
       const compProfiles = JSON.parse(localStorage.getItem('ayokerja_company_profiles') || '{}');
       compProfiles[regEmail.trim().toLowerCase()] = {
@@ -79,7 +80,7 @@ export default function LoginPerusahaan() {
         ukuranKaryawan: '50 - 200 Karyawan',
         deskripsi: `${regCompanyName.trim()} adalah entitas bisnis resmi yang membuka peluang rekrutmen melalui portal AYOKERJA!.`,
       };
-      localStorage.setItem('ayokerja_company_profiles', JSON.stringify(compProfiles));
+      safeSetStorageItem('ayokerja_company_profiles', compProfiles);
     } catch (err) {
       console.error(err);
     }
@@ -136,8 +137,9 @@ export default function LoginPerusahaan() {
           {activeTab === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Email Resmi Perusahaan / HR</label>
+                <label htmlFor="companyEmailInput" className="block text-xs font-bold text-slate-700 mb-1.5">Email Resmi Perusahaan / HR</label>
                 <input
+                  id="companyEmailInput"
                   type="email"
                   required
                   value={companyEmail}
@@ -149,12 +151,13 @@ export default function LoginPerusahaan() {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-bold text-slate-700">Kata Sandi Akun Perusahaan</label>
+                  <label htmlFor="companyPasswordInput" className="block text-xs font-bold text-slate-700">Kata Sandi Akun Perusahaan</label>
                   <a href="#" onClick={(e) => { e.preventDefault(); alert('Hubungi administrator AYOKERJA! di support@ayokerja.id untuk pemulihan kredensial korporasi.'); }} className="text-[11px] font-semibold text-[#16B3A3] hover:underline">
                     Bantuan Sandi?
                   </a>
                 </div>
                 <input
+                  id="companyPasswordInput"
                   type="password"
                   required
                   value={companyPassword}
@@ -165,8 +168,8 @@ export default function LoginPerusahaan() {
               </div>
 
               <div className="flex items-center justify-between text-xs pt-1">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-600">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#16B3A3] focus:ring-[#16B3A3] border-slate-300" />
+                <label htmlFor="rememberCompanyCreds" className="flex items-center gap-2 cursor-pointer text-slate-600">
+                  <input id="rememberCompanyCreds" type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#16B3A3] focus:ring-[#16B3A3] border-slate-300 cursor-pointer" />
                   <span>Ingat kredensial recruiter ini</span>
                 </label>
               </div>
@@ -183,8 +186,9 @@ export default function LoginPerusahaan() {
           {activeTab === 'register' && (
             <form onSubmit={handleRegisterSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Nama Resmi Perusahaan / PT <span className="text-red-500">*</span></label>
+                <label htmlFor="regCompanyName" className="block text-xs font-bold text-slate-700 mb-1.5">Nama Resmi Perusahaan / PT <span className="text-red-500">*</span></label>
                 <input
+                  id="regCompanyName"
                   type="text"
                   required
                   value={regCompanyName}
@@ -196,8 +200,9 @@ export default function LoginPerusahaan() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Bidang Industri <span className="text-red-500">*</span></label>
+                  <label htmlFor="regIndustrySelect" className="block text-xs font-bold text-slate-700 mb-1.5">Bidang Industri <span className="text-red-500">*</span></label>
                   <select
+                    id="regIndustrySelect"
                     value={regIndustry}
                     onChange={(e) => setRegIndustry(e.target.value)}
                     required
@@ -211,8 +216,9 @@ export default function LoginPerusahaan() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">No. Telepon Kantor <span className="text-red-500">*</span></label>
+                  <label htmlFor="regPhoneInput" className="block text-xs font-bold text-slate-700 mb-1.5">No. Telepon Kantor <span className="text-red-500">*</span></label>
                   <input
+                    id="regPhoneInput"
                     type="tel"
                     required
                     value={regPhone}
@@ -224,8 +230,9 @@ export default function LoginPerusahaan() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Email PIC / HR Recruiter <span className="text-red-500">*</span></label>
+                <label htmlFor="regCompanyEmailInput" className="block text-xs font-bold text-slate-700 mb-1.5">Email PIC / HR Recruiter <span className="text-red-500">*</span></label>
                 <input
+                  id="regCompanyEmailInput"
                   type="email"
                   required
                   value={regEmail}
@@ -236,8 +243,9 @@ export default function LoginPerusahaan() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Buat Kata Sandi Akun <span className="text-red-500">*</span></label>
+                <label htmlFor="regCompanyPasswordInput" className="block text-xs font-bold text-slate-700 mb-1.5">Buat Kata Sandi Akun <span className="text-red-500">*</span></label>
                 <input
+                  id="regCompanyPasswordInput"
                   type="password"
                   required
                   value={regPassword}
@@ -248,8 +256,8 @@ export default function LoginPerusahaan() {
               </div>
 
               <div className="flex items-start gap-2 pt-1">
-                <input type="checkbox" required defaultChecked className="w-4 h-4 rounded text-[#16B3A3] focus:ring-[#16B3A3] border-slate-300 mt-0.5" />
-                <label className="text-[11px] text-slate-500 leading-snug">
+                <input id="agreePartnerTermsCheck" type="checkbox" required defaultChecked className="w-4 h-4 rounded text-[#16B3A3] focus:ring-[#16B3A3] border-slate-300 mt-0.5 cursor-pointer" />
+                <label htmlFor="agreePartnerTermsCheck" className="text-[11px] text-slate-500 leading-snug cursor-pointer">
                   Saya menyetujui Ketentuan Kemitraan Recruiter &amp; Kebijakan Privasi Rekrutmen Terverifikasi AYOKERJA!.
                 </label>
               </div>

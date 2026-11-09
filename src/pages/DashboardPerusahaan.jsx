@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { safeSetStorageItem } from '../utils/storage';
 import RincianKandidat from '../components/RincianKandidat';
 import FormulirEditLowongan from '../components/FormulirEditLowongan';
 import TabelLowonganPerusahaan from '../components/TabelLowonganPerusahaan';
@@ -82,7 +83,7 @@ export default function DashboardPerusahaan() {
   });
 
   useEffect(() => {
-    localStorage.setItem('ayokerja_current_company', JSON.stringify(companyProfile));
+    safeSetStorageItem('ayokerja_current_company', companyProfile);
   }, [companyProfile]);
 
   // State daftar lowongan
@@ -326,7 +327,7 @@ export default function DashboardPerusahaan() {
   });
 
   useEffect(() => {
-    localStorage.setItem('ayokerja_company_applicants', JSON.stringify(applicants));
+    safeSetStorageItem('ayokerja_company_applicants', applicants);
   }, [applicants]);
 
   // Modal edit lowongan
@@ -1055,7 +1056,7 @@ export default function DashboardPerusahaan() {
                   </div>
 
                   <div className="flex-1 space-y-2">
-                    <label className="block text-xs font-bold text-slate-700">Logo Resmi Perusahaan</label>
+                    <label htmlFor="companyLogoUpload" className="block text-xs font-bold text-slate-700 cursor-pointer">Logo Resmi Perusahaan</label>
                     <div className="flex flex-wrap items-center gap-3">
                       <label
                         htmlFor="companyLogoUpload"
@@ -1075,7 +1076,7 @@ export default function DashboardPerusahaan() {
                         <button
                           type="button"
                           onClick={() => setProfileForm({ ...profileForm, logo: '/assets/company-google.png' })}
-                          className="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors"
+                          className="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer"
                         >
                           Reset ke Default
                         </button>
@@ -1090,8 +1091,9 @@ export default function DashboardPerusahaan() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Nama Resmi Perusahaan *</label>
+                  <label htmlFor="profileCompName" className="block text-xs font-bold text-slate-700 mb-1.5">Nama Resmi Perusahaan *</label>
                   <input
+                    id="profileCompName"
                     type="text"
                     required
                     value={profileForm.name}
@@ -1101,8 +1103,9 @@ export default function DashboardPerusahaan() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Kategori Industri *</label>
+                  <label htmlFor="profileCompIndustry" className="block text-xs font-bold text-slate-700 mb-1.5">Kategori Industri *</label>
                   <select
+                    id="profileCompIndustry"
                     value={profileForm.industry}
                     onChange={(e) => setProfileForm({ ...profileForm, industry: e.target.value })}
                     className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 bg-white"
@@ -1117,8 +1120,9 @@ export default function DashboardPerusahaan() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Ukuran / Jumlah Karyawan *</label>
+                  <label htmlFor="profileCompEmpSize" className="block text-xs font-bold text-slate-700 mb-1.5">Ukuran / Jumlah Karyawan *</label>
                   <select
+                    id="profileCompEmpSize"
                     value={profileForm.employeeSize}
                     onChange={(e) => setProfileForm({ ...profileForm, employeeSize: e.target.value })}
                     className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 bg-white"
@@ -1133,8 +1137,9 @@ export default function DashboardPerusahaan() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Email Rekrutmen Resmi *</label>
+                  <label htmlFor="profileCompEmail" className="block text-xs font-bold text-slate-700 mb-1.5">Email Rekrutmen Resmi *</label>
                   <input
+                    id="profileCompEmail"
                     type="email"
                     required
                     value={profileForm.email}
@@ -1144,8 +1149,9 @@ export default function DashboardPerusahaan() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Kantor Pusat *</label>
+                  <label htmlFor="profileCompAddress" className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Kantor Pusat *</label>
                   <input
+                    id="profileCompAddress"
                     type="text"
                     required
                     value={profileForm.address}
@@ -1159,10 +1165,11 @@ export default function DashboardPerusahaan() {
                 <h3 className="text-sm font-bold text-[#00193F]">Tautan Eksternal &amp; Media Sosial</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                    <label htmlFor="profileCompWebsite" className="block text-[11px] font-bold text-slate-600 mb-1">
                       <i className="fa-solid fa-globe mr-1 text-slate-400"></i> Website Resmi
                     </label>
                     <input
+                      id="profileCompWebsite"
                       type="url"
                       value={profileForm.website}
                       onChange={(e) => setProfileForm({ ...profileForm, website: e.target.value })}
@@ -1172,10 +1179,11 @@ export default function DashboardPerusahaan() {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                    <label htmlFor="profileCompLinkedin" className="block text-[11px] font-bold text-slate-600 mb-1">
                       <i className="fa-brands fa-linkedin mr-1 text-blue-600"></i> LinkedIn Perusahaan
                     </label>
                     <input
+                      id="profileCompLinkedin"
                       type="url"
                       value={profileForm.linkedin}
                       onChange={(e) => setProfileForm({ ...profileForm, linkedin: e.target.value })}
@@ -1185,10 +1193,11 @@ export default function DashboardPerusahaan() {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                    <label htmlFor="profileCompInstagram" className="block text-[11px] font-bold text-slate-600 mb-1">
                       <i className="fa-brands fa-instagram mr-1 text-pink-600"></i> Instagram
                     </label>
                     <input
+                      id="profileCompInstagram"
                       type="text"
                       value={profileForm.instagram}
                       onChange={(e) => setProfileForm({ ...profileForm, instagram: e.target.value })}
@@ -1200,8 +1209,9 @@ export default function DashboardPerusahaan() {
               </div>
 
               <div className="pt-4 border-t border-slate-100">
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Deskripsi Profil Perusahaan ('Tentang Kami') *</label>
+                <label htmlFor="profileCompDesc" className="block text-xs font-bold text-slate-700 mb-1.5">Deskripsi Profil Perusahaan ('Tentang Kami') *</label>
                 <textarea
+                  id="profileCompDesc"
                   rows="4"
                   required
                   value={profileForm.description}

@@ -61,7 +61,7 @@ function AppContent() {
       }
     };
 
-    loadJobsFromApi();
+    void loadJobsFromApi();
 
     return () => {
       isMounted = false;

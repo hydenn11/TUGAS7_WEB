@@ -170,7 +170,7 @@ export default function LowonganApi() {
     if (debugState === 'loading' || debugState === 'error') {
       return;
     }
-    fetchJobs();
+    void fetchJobs();
   }, [debugState]);
 
   const filteredJobs = useMemo(() => {
