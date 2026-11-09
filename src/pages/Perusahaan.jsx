@@ -28,7 +28,7 @@ export default function Perusahaan() {
   };
 
   useEffect(() => {
-    fetchCompanies();
+    void fetchCompanies();
   }, []);
 
   const filteredCompanies = companyList.filter((comp) => {

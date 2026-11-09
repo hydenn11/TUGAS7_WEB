@@ -164,6 +164,7 @@ export default function ProfilePelamar() {
                   className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#16B3A3] hover:bg-[#109485] text-white flex items-center justify-center shadow-md cursor-pointer transition-transform hover:scale-110"
                   title="Ganti Foto Profil"
                 >
+                  <span className="sr-only">Ganti Foto Profil</span>
                   <i className="fa-solid fa-camera text-xs"></i>
                   <input
                     type="file"
@@ -527,8 +528,9 @@ export default function ProfilePelamar() {
 
             <form onSubmit={handleSaveName} className="space-y-4 text-xs sm:text-sm">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Nama Lengkap *</label>
+                <label htmlFor="profileEditName" className="block font-bold text-slate-700 mb-1">Nama Lengkap *</label>
                 <input
+                  id="profileEditName"
                   type="text"
                   required
                   value={name}
@@ -539,8 +541,9 @@ export default function ProfilePelamar() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Headline / Posisi Bidang</label>
+                <label htmlFor="profileEditHeadline" className="block font-bold text-slate-700 mb-1">Headline / Posisi Bidang</label>
                 <input
+                  id="profileEditHeadline"
                   type="text"
                   value={headline}
                   onChange={(e) => setHeadline(e.target.value)}
@@ -551,8 +554,9 @@ export default function ProfilePelamar() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Email Pelamar *</label>
+                  <label htmlFor="profileEditEmail" className="block font-bold text-slate-700 mb-1">Email Pelamar *</label>
                   <input
+                    id="profileEditEmail"
                     type="email"
                     required
                     value={email}
@@ -562,8 +566,9 @@ export default function ProfilePelamar() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nomor Telepon</label>
+                  <label htmlFor="profileEditPhone" className="block font-bold text-slate-700 mb-1">Nomor Telepon</label>
                   <input
+                    id="profileEditPhone"
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -574,8 +579,9 @@ export default function ProfilePelamar() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Domisili / Lokasi</label>
+                <label htmlFor="profileEditLocation" className="block font-bold text-slate-700 mb-1">Domisili / Lokasi</label>
                 <input
+                  id="profileEditLocation"
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
@@ -585,8 +591,9 @@ export default function ProfilePelamar() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Tautan LinkedIn</label>
+                <label htmlFor="profileEditLinkedin" className="block font-bold text-slate-700 mb-1">Tautan LinkedIn</label>
                 <input
+                  id="profileEditLinkedin"
                   type="text"
                   value={linkedin}
                   onChange={(e) => setLinkedin(e.target.value)}
@@ -631,10 +638,11 @@ export default function ProfilePelamar() {
 
             <form onSubmit={handleSaveSummary} className="space-y-4 text-xs sm:text-sm">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
+                <label htmlFor="profileEditSummary" className="block font-bold text-slate-700 mb-1">
                   Ringkasan Pribadi (Tentang Saya) *
                 </label>
                 <textarea
+                  id="profileEditSummary"
                   rows="6"
                   required
                   value={summary}

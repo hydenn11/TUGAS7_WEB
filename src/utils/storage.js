@@ -53,3 +53,4 @@ export function safeGetStorageItem(key, defaultValue = null) {
     return defaultValue;
   }
 }
+
