@@ -1,155 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Perusahaan() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('');
+  const [companyList, setCompanyList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const companyList = [
-    {
-      id: 1,
-      name: 'PT Astra International Tbk',
-      dataName: 'Astra International',
-      industryKey: 'Teknologi',
-      industryLabel: 'Otomotif & Industri IoT',
-      logo: '/assets/company-amazon.png',
-      rating: '4.8',
-      desc: 'Konglomerat multisektor terkemuka Indonesia dengan fokus inovasi otomotif, jasa keuangan, alat berat, dan pengembangan platform Industrial IoT cerdas.',
-      location: 'Semarang & Jakarta',
-      openJobs: '18 Lowongan Terbuka',
-      since: 'Mitra sejak 2023',
-    },
-    {
-      id: 2,
-      name: 'PT Telkom Indonesia (Persero) Tbk',
-      dataName: 'Telkom Indonesia',
-      industryKey: 'Telekomunikasi',
-      industryLabel: 'Telekomunikasi & Jaringan',
-      logo: '/assets/company-spacex.png',
-      rating: '4.9',
-      desc: 'BUMN telekomunikasi digital terbesar di Indonesia penyedia jaringan pita lebar, pusat data nasional, dan infrastruktur cloud telekomunikasi nusantara.',
-      location: 'Bandung & Jakarta',
-      openJobs: '24 Lowongan Terbuka',
-      since: 'Mitra sejak 2023',
-    },
-    {
-      id: 3,
-      name: 'PT Bank Central Asia Tbk (BCA)',
-      dataName: 'Bank Central Asia BCA',
-      industryKey: 'Teknologi',
-      industryLabel: 'Perbankan & Fintech',
-      logo: '/assets/company-google.png',
-      rating: '4.9',
-      desc: 'Bank swasta terbesar di Indonesia pelopor inovasi perbankan digital, keamanan data perbankan transaksi tinggi, dan sistem pembayaran elektronik.',
-      location: 'Jakarta Pusat',
-      openJobs: '14 Lowongan Terbuka',
-      since: 'Mitra sejak 2024',
-    },
-    {
-      id: 4,
-      name: 'PT GoTo Gojek Tokopedia Tbk',
-      dataName: 'GoTo Gojek Tokopedia',
-      industryKey: 'Teknologi',
-      industryLabel: 'Ekosistem Digital & E-Commerce',
-      logo: '/assets/company-adobe.png',
-      rating: '4.8',
-      desc: 'Ekosistem digital terintegrasi terbesar di Indonesia yang menggabungkan layanan on-demand, e-commerce Tokopedia, dan solusi keuangan digital GoPay.',
-      location: 'Jakarta Selatan',
-      openJobs: '20 Lowongan Terbuka',
-      since: 'Mitra sejak 2024',
-    },
-    {
-      id: 5,
-      name: 'PT Google Indonesia',
-      dataName: 'Google Indonesia Cloud Global',
-      industryKey: 'Teknologi',
-      industryLabel: 'Teknologi & Cloud',
-      logo: '/assets/company-google.png',
-      rating: '4.9',
-      desc: 'Perusahaan teknologi multinasional penyedia ekosistem mesin pencari, komputasi awan Google Cloud, dan infrastruktur kecerdasan buatan global.',
-      location: 'SCBD, Jakarta Selatan',
-      openJobs: '12 Lowongan Terbuka',
-      since: 'Mitra sejak 2024',
-    },
-    {
-      id: 6,
-      name: 'PT Amazon Web Services Indonesia',
-      dataName: 'Amazon Web Services AWS',
-      industryKey: 'Cloud',
-      industryLabel: 'Cloud & Infra',
-      logo: '/assets/company-amazon.png',
-      rating: '4.8',
-      desc: 'Penyedia platform komputasi awan global terlengkap, infrastruktur server enterprise, dan pusat analitik data di kawasan Asia Pasifik.',
-      location: 'SCBD Senayan, Jakarta',
-      openJobs: '8 Lowongan Terbuka',
-      since: 'Mitra sejak 2024',
-    },
-    {
-      id: 7,
-      name: 'PT Adobe Systems Indonesia',
-      dataName: 'Adobe Systems Creative Cloud',
-      industryKey: 'Desain',
-      industryLabel: 'Desain & Kreatif',
-      logo: '/assets/company-adobe.png',
-      rating: '4.9',
-      desc: 'Pelopor perangkat lunak kreatif digital terkemuka dunia di bidang desain grafis, ilustrasi, UI/UX, video editing, dan publikasi media.',
-      location: 'BSD City, Tangerang',
-      openJobs: '6 Lowongan Terbuka',
-      since: 'Mitra sejak 2025',
-    },
-    {
-      id: 8,
-      name: 'PT Sari Burger Indonesia',
-      dataName: 'Burger King Sari Burger Global Tech',
-      industryKey: 'F&B',
-      industryLabel: 'F&B / Kuliner Tech',
-      logo: '/assets/company-burgerking.png',
-      rating: '4.7',
-      desc: 'Jaringan waralaba restoran cepat saji internasional dengan ratusan cabang di Indonesia, didukung manajemen rantai pasok dan analitik data global.',
-      location: 'Surabaya & Nasional',
-      openJobs: '15 Lowongan Terbuka',
-      since: 'Mitra sejak 2024',
-    },
-    {
-      id: 9,
-      name: 'PT Starlink Services Indonesia',
-      dataName: 'SpaceX Starlink Services',
-      industryKey: 'Telekomunikasi',
-      industryLabel: 'Telekomunikasi Satelit',
-      logo: '/assets/company-spacex.png',
-      rating: '4.9',
-      desc: 'Penyedia jaringan telekomunikasi internet satelit orbit rendah berkecepatan tinggi yang menjangkau seluruh pelosok kepulauan Indonesia.',
-      location: 'Jakarta Pusat',
-      openJobs: '5 Lowongan Terbuka',
-      since: 'Mitra sejak 2025',
-    },
-    {
-      id: 10,
-      name: 'PT Kalla Logistics Nusantara',
-      dataName: 'Kalla Logistics',
-      industryKey: 'Teknologi',
-      industryLabel: 'Logistik & Distribusi',
-      logo: '/assets/company-google.png',
-      rating: '4.7',
-      desc: 'Penyedia layanan solusi rantai pasok terintegrasi, manajemen armada pintar, dan pergudangan modern terkemuka di kawasan Indonesia Timur.',
-      location: 'Makassar, Sulawesi Selatan',
-      openJobs: '9 Lowongan Terbuka',
-      since: 'Mitra sejak 2024',
-    },
-    {
-      id: 11,
-      name: 'PT Bali Digital Media',
-      dataName: 'Bali Digital Media',
-      industryKey: 'Desain',
-      industryLabel: 'Media Kreatif & Desain',
-      logo: '/assets/company-adobe.png',
-      rating: '4.8',
-      desc: 'Agensi kreatif digital dan produksi konten multimedia interaktif terdepan untuk kampanye promosi pariwisata dan jenama internasional.',
-      location: 'Denpasar, Bali',
-      openJobs: '7 Lowongan Terbuka',
-      since: 'Mitra sejak 2025',
-    },
-  ];
+  const fetchCompanies = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Jeda singkat buatan untuk UX smooth loading
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const response = await fetch('/data/companies.json');
+      if (!response.ok) {
+        throw new Error(`Gagal memuat data mitra perusahaan (HTTP ${response.status})`);
+      }
+      const data = await response.json();
+      setCompanyList(data);
+    } catch (err) {
+      setError(err.message || 'Terjadi kesalahan saat memuat data perusahaan.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
 
   const filteredCompanies = companyList.filter((comp) => {
     const matchesSearch =
@@ -166,6 +46,10 @@ export default function Perusahaan() {
     <div className="min-h-screen bg-[#F8FAFC] pb-16 flex flex-col">
       <section className="w-full bg-gradient-to-r from-[#00193F] to-[#16B3A3] pt-12 pb-16 px-4 text-center text-white shadow-md mb-8">
         <div className="max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-teal-200 mb-3 border border-white/20">
+            <i className="fa-solid fa-handshake"></i>
+            <span>Jaringan Mitra Resmi AYOKERJA!</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-3">
             Daftar Mitra <span className="text-[#99F6E4]">Perusahaan</span>
           </h1>
@@ -224,11 +108,47 @@ export default function Perusahaan() {
             <p className="text-xs text-slate-500 mt-0.5">Menampilkan mitra aktif yang sedang membuka lowongan karir</p>
           </div>
           <span className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#CCFBF1] text-[#16B3A3] self-start sm:self-auto">
-            {filteredCompanies.length} Perusahaan Terdaftar
+            {loading ? 'Memuat data...' : `${filteredCompanies.length} Perusahaan Terdaftar`}
           </span>
         </div>
 
-        {filteredCompanies.length === 0 ? (
+        {/* Loading State */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-slate-200 rounded-xl"></div>
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-slate-100 rounded w-1/2"></div>
+                  </div>
+                </div>
+                <div className="h-12 bg-slate-100 rounded-lg"></div>
+                <div className="h-4 bg-slate-200 rounded w-1/3"></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Error State */}
+        {!loading && error && (
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center max-w-md mx-auto my-8 space-y-3">
+            <i className="fa-solid fa-triangle-exclamation text-rose-500 text-3xl"></i>
+            <h3 className="font-bold text-rose-800 text-sm">{error}</h3>
+            <p className="text-xs text-rose-600">Pastikan file /data/companies.json tersedia pada direktori public.</p>
+            <button
+              type="button"
+              onClick={fetchCompanies}
+              className="px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-semibold hover:bg-rose-700 transition-colors shadow-sm"
+            >
+              Coba Lagi
+            </button>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && filteredCompanies.length === 0 && (
           <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm max-w-md mx-auto my-10 space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl">
               <i className="fa-solid fa-building-circle-xmark"></i>
@@ -248,7 +168,10 @@ export default function Perusahaan() {
               Reset Filter
             </button>
           </div>
-        ) : (
+        )}
+
+        {/* Success List State */}
+        {!loading && !error && filteredCompanies.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCompanies.map((comp) => (
               <article
