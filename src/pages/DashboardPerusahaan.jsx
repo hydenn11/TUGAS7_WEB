@@ -7,7 +7,7 @@ import FormulirEditLowongan from '../components/FormulirEditLowongan';
 import TabelLowonganPerusahaan from '../components/TabelLowonganPerusahaan';
 import FormulirPasangLowongan from '../components/FormulirPasangLowongan';
 
-const VALID_TABS = ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'];
+const VALID_TABS = new Set(['dashboard', 'jobs', 'create-job', 'applicants', 'profile']);
 
 const STAGES = [
   { key: 'baru', label: 'Terkirim / Baru', color: 'border-blue-400 bg-blue-50/50 text-blue-700', badge: 'bg-blue-100 text-blue-700' },
@@ -57,6 +57,34 @@ function readSavedArray(key, fallback) {
   return Array.isArray(saved) ? saved : fallback;
 }
 
+function filterApplicantsList(applicants, filterJobId, searchQuery) {
+  const normalizedQuery = searchQuery.toLowerCase();
+  return applicants.filter((app) => {
+    const matchJob = filterJobId === 'all' || String(app.jobId) === String(filterJobId);
+    const matchSearch =
+      app.name.toLowerCase().includes(normalizedQuery) ||
+      app.jobTitle.toLowerCase().includes(normalizedQuery) ||
+      app.skills.some((s) => s.toLowerCase().includes(normalizedQuery));
+    return matchJob && matchSearch;
+  });
+}
+
+function buildUpdatedCompanyPayload(profileForm) {
+  return {
+    namaPerusahaan: profileForm.name,
+    email: profileForm.email,
+    industri: profileForm.industry,
+    ukuranKaryawan: profileForm.employeeSize,
+    lokasi: profileForm.address,
+    website: profileForm.website,
+    linkedin: profileForm.linkedin,
+    instagram: profileForm.instagram,
+    deskripsi: profileForm.description,
+    logo: profileForm.logo,
+    banner: profileForm.banner,
+  };
+}
+
 export default function DashboardPerusahaan() {
   const { user, logout, updateCompanyProfile } = useAuth();
   const navigate = useNavigate();
@@ -65,7 +93,7 @@ export default function DashboardPerusahaan() {
   const tabFromUrl = searchParams.get('tab');
 
   const [activeTab, setActiveTab] = useState(() =>
-    VALID_TABS.includes(tabFromUrl) ? tabFromUrl : 'dashboard'
+    VALID_TABS.has(tabFromUrl) ? tabFromUrl : 'dashboard'
   );
 
   const switchTab = (tab) => {
@@ -74,7 +102,7 @@ export default function DashboardPerusahaan() {
   };
 
   useEffect(() => {
-    const resolved = VALID_TABS.includes(tabFromUrl) ? tabFromUrl : 'dashboard';
+    const resolved = VALID_TABS.has(tabFromUrl) ? tabFromUrl : 'dashboard';
     setActiveTab((prev) => (prev !== resolved ? resolved : prev));
   }, [tabFromUrl]);
 
@@ -339,23 +367,17 @@ export default function DashboardPerusahaan() {
   };
 
   const toggleJobStatus = (id) => {
-    setJobs(
-      jobs.map((j) => {
-        if (j.id === id) {
-          const nextStatus = j.status === 'Aktif' ? 'Ditutup' : 'Aktif';
-          showToast(`Status lowongan diubah menjadi "${nextStatus}"`);
-          return { ...j, status: nextStatus };
-        }
-        return j;
-      })
-    );
+    const target = jobs.find((j) => j.id === id);
+    if (!target) return;
+    const nextStatus = target.status === 'Aktif' ? 'Ditutup' : 'Aktif';
+    setJobs(jobs.map((j) => (j.id === id ? { ...j, status: nextStatus } : j)));
+    showToast(`Status lowongan diubah menjadi "${nextStatus}"`);
   };
 
   const handleDeleteJob = (id, title) => {
-    if (window.confirm(`Apakah Anda yakin ingin menghapus lowongan "${title}"?`)) {
-      setJobs(jobs.filter((j) => j.id !== id));
-      showToast(`Lowongan "${title}" berhasil dihapus.`);
-    }
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus lowongan "${title}"?`)) return;
+    setJobs(jobs.filter((j) => j.id !== id));
+    showToast(`Lowongan "${title}" berhasil dihapus.`);
   };
 
   // State seleksi pelamar
@@ -365,16 +387,10 @@ export default function DashboardPerusahaan() {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [candidateModalOpen, setCandidateModalOpen] = useState(false);
 
-  const filteredApplicants = useMemo(() => {
-    return applicants.filter((app) => {
-      const matchJob = atsFilterJobId === 'all' || String(app.jobId) === String(atsFilterJobId);
-      const matchSearch =
-        app.name.toLowerCase().includes(atsSearchQuery.toLowerCase()) ||
-        app.jobTitle.toLowerCase().includes(atsSearchQuery.toLowerCase()) ||
-        app.skills.some((s) => s.toLowerCase().includes(atsSearchQuery.toLowerCase()));
-      return matchJob && matchSearch;
-    });
-  }, [applicants, atsFilterJobId, atsSearchQuery]);
+  const filteredApplicants = useMemo(
+    () => filterApplicantsList(applicants, atsFilterJobId, atsSearchQuery),
+    [applicants, atsFilterJobId, atsSearchQuery]
+  );
 
   const handleStageChange = (applicantId, newStage) => {
     setApplicants((prev) =>
@@ -394,21 +410,7 @@ export default function DashboardPerusahaan() {
   const handleProfileSubmit = (e) => {
     e.preventDefault();
     setCompanyProfile({ ...profileForm });
-    if (updateCompanyProfile) {
-      updateCompanyProfile({
-        namaPerusahaan: profileForm.name,
-        email: profileForm.email,
-        industri: profileForm.industry,
-        ukuranKaryawan: profileForm.employeeSize,
-        lokasi: profileForm.address,
-        website: profileForm.website,
-        linkedin: profileForm.linkedin,
-        instagram: profileForm.instagram,
-        deskripsi: profileForm.description,
-        logo: profileForm.logo,
-        banner: profileForm.banner,
-      });
-    }
+    updateCompanyProfile?.(buildUpdatedCompanyPayload(profileForm));
     showToast('Profil dan informasi perusahaan berhasil diperbarui!');
   };
 

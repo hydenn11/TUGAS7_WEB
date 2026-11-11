@@ -14,7 +14,7 @@ function sanitizeKey(key) {
 export function sanitizeStorageInput(data) {
   if (data === null || data === undefined) return data;
   if (typeof data === 'string') {
-    return data.replace(/[<>'"\\]/g, '').trim();
+    return data.replaceAll(/[<>'"\\]/g, '').replaceAll('javascript:', '').trim();
   }
   if (typeof data === 'number' || typeof data === 'boolean') {
     return data;
