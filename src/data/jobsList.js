@@ -127,7 +127,7 @@ export const ALL_JOBS = [
   },
 ];
 
-export const JOB_DETAILS_MAP = {
+const JOB_DETAILS_MAP = {
   1: {
     description:
       'Sebagai Senior Cloud & DevOps Engineer di PT Google Indonesia, Anda akan merancang dan mengimplementasikan arsitektur komputasi awan berbasis Google Cloud Platform (GCP) serta mengintegrasikan pipeline CI/CD dan Kubernetes untuk klien korporat skala regional.',

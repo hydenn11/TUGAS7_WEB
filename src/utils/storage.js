@@ -1,8 +1,4 @@
-/**
- * Modul Utilitas Penyimpanan Aman (Safe Browser Storage)
- * Mencegah Browser Storage Poisoning (CWE / SonarQube S5147)
- * dengan validasi tipe, sanitasi input, encoding URI, dan penanganan error.
- */
+// Helper localStorage dengan sanitasi input dan error handling
 
 const BLOCKED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 
@@ -11,7 +7,7 @@ function sanitizeKey(key) {
   return BLOCKED_KEYS.has(cleaned) ? '' : cleaned;
 }
 
-export function sanitizeStorageInput(data) {
+function sanitizeStorageInput(data) {
   if (data === null || data === undefined) return data;
   if (typeof data === 'string') {
     return data.replaceAll(/[<>'"\\]/g, '').replaceAll('javascript:', '').trim();

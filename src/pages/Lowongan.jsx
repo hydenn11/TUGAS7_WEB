@@ -105,7 +105,7 @@ export default function Lowongan({ jobs: propJobs, loadingJobs = false }) {
 
   const [candidateName, setCandidateName] = useState(user?.nama || '');
   const [candidateEmail, setCandidateEmail] = useState(user?.email || '');
-  const [candidatePhone, setCandidatePhone] = useState(user?.telepon || '0857-1122-3344');
+  const [candidatePhone, setCandidatePhone] = useState(user?.telepon || '');
   const [resumeOption, setResumeOption] = useState('profile');
   const [uploadedResumeName, setUploadedResumeName] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
@@ -230,9 +230,9 @@ export default function Lowongan({ jobs: propJobs, loadingJobs = false }) {
       return;
     }
 
-    setCandidateName(user?.nama || 'Luthfi Ramadhan');
-    setCandidateEmail(user?.email || 'daniramadh47@gmail.com');
-    setCandidatePhone(user?.telepon || '0857-1122-3344');
+    setCandidateName(user?.nama || '');
+    setCandidateEmail(user?.email || '');
+    setCandidatePhone(user?.telepon || '');
     setResumeOption('profile');
     setUploadedResumeName('');
     setCoverLetter('');

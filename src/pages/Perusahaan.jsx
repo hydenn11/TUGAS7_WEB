@@ -12,7 +12,6 @@ export default function Perusahaan() {
     setLoading(true);
     setError(null);
     try {
-      // Jeda singkat buatan untuk UX smooth loading
       await new Promise((resolve) => setTimeout(resolve, 300));
       const response = await fetch('/data/companies.json');
       if (!response.ok) {

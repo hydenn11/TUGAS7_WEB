@@ -652,40 +652,24 @@ export default function DashboardPerusahaan() {
         {activeTab === 'dashboard' && (
           <div className="space-y-8 animate-in fade-in duration-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="w-13 h-13 rounded-2xl bg-[#CCFBF1] text-[#16B3A3] flex items-center justify-center text-2xl shrink-0">
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalActiveJobs}</div>
-                  <div className="text-xs text-slate-500 font-semibold">Lowongan Aktif Tayang</div>
-                </div>
+              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalActiveJobs}</div>
+                <div className="text-xs text-slate-500 font-semibold mt-1">Lowongan Aktif Tayang</div>
               </div>
 
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="w-13 h-13 rounded-2xl bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center text-2xl shrink-0">
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalApplicants}</div>
-                  <div className="text-xs text-slate-500 font-semibold">Total Lamaran Masuk</div>
-                </div>
+              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalApplicants}</div>
+                <div className="text-xs text-slate-500 font-semibold mt-1">Total Lamaran Masuk</div>
               </div>
 
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="w-13 h-13 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl shrink-0">
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalInterviews}</div>
-                  <div className="text-xs text-slate-500 font-semibold">Jadwal Interview Mendatang</div>
-                </div>
+              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalInterviews}</div>
+                <div className="text-xs text-slate-500 font-semibold mt-1">Jadwal Interview Mendatang</div>
               </div>
 
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="w-13 h-13 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shrink-0">
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalHired}</div>
-                  <div className="text-xs text-slate-500 font-semibold">Kandidat Diterima (Hired)</div>
-                </div>
+              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-2xl sm:text-3xl font-extrabold text-[#00193F]">{totalHired}</div>
+                <div className="text-xs text-slate-500 font-semibold mt-1">Kandidat Diterima (Hired)</div>
               </div>
             </div>
 

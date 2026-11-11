@@ -1,17 +1,17 @@
 import { safeGetStorageItem, safeSetStorageItem } from './storage.js';
 
-export const DEMO_ACCOUNTS = {
+const DEMO_ACCOUNTS = {
   pelamar: {
     email: 'pelamar@ayokerja.id',
     username: 'daniramadh47',
     nama: 'Luthfi Ramadhan',
-    code: ['ayokerja', '123'].join(''),
+    code: 'ayokerja123',
   },
   perusahaan: {
     email: 'hr@google.co.id',
     namaPerusahaan: 'PT Google Indonesia',
     industri: 'Teknologi Informasi & SaaS',
-    code: ['ayokerja', '123'].join(''),
+    code: 'ayokerja123',
   },
 };
 

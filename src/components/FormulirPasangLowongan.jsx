@@ -479,9 +479,11 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
                   <h4 className="text-lg font-extrabold text-[#00193F]">
                     {newJobTitle || 'Judul Posisi Lowongan'}
                   </h4>
-                  <p className="text-xs text-slate-600 font-medium">
+                  <p className="text-xs text-slate-600 font-medium flex items-center gap-1 flex-wrap">
                     <span>{companyProfile?.name || 'Perusahaan Mitra'}</span>
-                    <span>{` • 📍 ${newJobLocation}`}</span>
+                    <span>•</span>
+                    <i className="fa-solid fa-location-dot text-[#16B3A3] text-[10px]"></i>
+                    <span>{newJobLocation}</span>
                   </p>
                 </div>
               </div>
