@@ -226,7 +226,7 @@ export default function LowonganApi() {
   };
 
   const handleResumeUpload = (e) => {
-    const file = e.target.files && e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         alert('Ukuran berkas melebihi batas maksimal 5MB.');
@@ -509,12 +509,15 @@ export default function LowonganApi() {
                           </button>
                         </div>
 
-                        <h2
-                          onClick={() => setActiveJobModal(job)}
-                          className="text-base font-extrabold text-[#00193F] group-hover:text-[#16B3A3] transition-colors leading-snug line-clamp-2 cursor-pointer mb-2.5"
-                          title="Klik untuk melihat rincian pekerjaan"
-                        >
-                          {job.title}
+                        <h2 className="text-base font-extrabold text-[#00193F] group-hover:text-[#16B3A3] transition-colors leading-snug line-clamp-2 mb-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setActiveJobModal(job)}
+                            className="text-left w-full cursor-pointer hover:underline focus:outline-none"
+                            title="Klik untuk melihat rincian pekerjaan"
+                          >
+                            {job.title}
+                          </button>
                         </h2>
 
                         <div className="flex flex-wrap items-center gap-1.5 mb-3.5">

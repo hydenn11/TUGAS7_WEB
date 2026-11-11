@@ -4,7 +4,7 @@ import React from 'react';
  * Menampilkan banner feedback (error, success, info) yang aksesibel di dalam form autentikasi.
  */
 export function AuthAlert({ feedback, onDismiss }) {
-  if (!feedback || !feedback.message) return null;
+  if (!feedback?.message) return null;
 
   const stylesByType = {
     error: 'bg-rose-50 border-rose-200 text-rose-800',

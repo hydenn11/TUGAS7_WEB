@@ -37,7 +37,7 @@ export default function Lowongan({ jobs: propJobs, loadingJobs = false }) {
     const globalSaved = (savedJobIds || [])
       .filter((id) => typeof id === 'string' && id.startsWith('global-'))
       .map((id) => {
-        if (savedJobDetails && savedJobDetails[id]) {
+        if (savedJobDetails?.[id]) {
           return savedJobDetails[id];
         }
         const num = Number.parseInt(id.replace('global-', ''), 10) || 1;
@@ -244,7 +244,7 @@ export default function Lowongan({ jobs: propJobs, loadingJobs = false }) {
   };
 
   const handleResumeUpload = (e) => {
-    const file = e.target.files && e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         alert('Ukuran berkas melebihi batas maksimal 5MB.');

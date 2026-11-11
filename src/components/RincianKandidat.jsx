@@ -48,8 +48,8 @@ export default function RincianKandidat({ isOpen, candidate, onClose }) {
           <div>
             <h4 className="font-bold text-[#00193F] mb-1.5">Keahlian &amp; Kualifikasi Teknis</h4>
             <div className="flex flex-wrap gap-1.5">
-              {candidate.skills.map((s, idx) => (
-                <span key={idx} className="px-2.5 py-1 rounded-md text-xs font-medium bg-[#CCFBF1] text-[#16B3A3] border border-[#99F6E4]/70">
+              {candidate.skills.map((s) => (
+                <span key={s} className="px-2.5 py-1 rounded-md text-xs font-medium bg-[#CCFBF1] text-[#16B3A3] border border-[#99F6E4]/70">
                   {s}
                 </span>
               ))}

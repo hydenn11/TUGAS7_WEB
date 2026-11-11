@@ -14,20 +14,22 @@ import DashboardPerusahaan from './pages/DashboardPerusahaan';
 import LowonganApi from './pages/LowonganApi';
 
 import { ALL_JOBS } from './data/jobsList';
+import { safeGetStorageItem, safeSetStorageItem } from './utils/storage';
+
+function mergeApiJobs(apiJobs, prevJobs) {
+  const apiIds = new Set(apiJobs.map((aj) => aj.id));
+  const customJobs = (prevJobs || []).filter((j) => !apiIds.has(j.id));
+  const merged = [...apiJobs, ...customJobs];
+  safeSetStorageItem('ayokerja_jobs_state', merged);
+  return merged;
+}
 
 function AppContent() {
   const location = useLocation();
 
   const [jobs, setJobs] = useState(() => {
-    const saved = localStorage.getItem('ayokerja_jobs_state');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Gagal parsing local storage jobs:', e);
-      }
-    }
-    return ALL_JOBS;
+    const saved = safeGetStorageItem('ayokerja_jobs_state', null);
+    return Array.isArray(saved) && saved.length > 0 ? saved : ALL_JOBS;
   });
 
   const [loadingJobs, setLoadingJobs] = useState(false);
@@ -40,19 +42,10 @@ function AppContent() {
       try {
         setLoadingJobs(true);
         const res = await fetch('/data/jobs.json');
-        if (res.ok) {
-          const apiJobs = await res.json();
-          if (isMounted && Array.isArray(apiJobs) && apiJobs.length > 0) {
-            setJobs((prevJobs) => {
-              // Pertahankan jika ada custom job yang baru ditambahkan via company-dashboard (id > 9 atau string)
-              const customJobs = (prevJobs || []).filter(
-                (j) => !apiJobs.some((aj) => aj.id === j.id)
-              );
-              const merged = [...apiJobs, ...customJobs];
-              localStorage.setItem('ayokerja_jobs_state', JSON.stringify(merged));
-              return merged;
-            });
-          }
+        if (!res.ok) return;
+        const apiJobs = await res.json();
+        if (isMounted && Array.isArray(apiJobs) && apiJobs.length > 0) {
+          setJobs((prevJobs) => mergeApiJobs(apiJobs, prevJobs));
         }
       } catch (err) {
         console.warn('Gagal memuat /data/jobs.json, fallback ke state lokal:', err);
@@ -69,7 +62,7 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('ayokerja_jobs_state', JSON.stringify(jobs));
+    safeSetStorageItem('ayokerja_jobs_state', jobs);
   }, [jobs]);
 
   const isDedicatedAuthOrDashboard =

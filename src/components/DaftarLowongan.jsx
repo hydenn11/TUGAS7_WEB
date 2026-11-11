@@ -12,23 +12,30 @@ export default function DaftarLowongan({
   activeTab = 'all',
   onTabChange,
 }) {
+  const renderEmptyState = () => {
+    if (activeTab === 'saved') {
+      return (
+        <PesanKosong
+          title="Belum Ada Lowongan Tersimpan"
+          description="Anda belum menandai lowongan pekerjaan ke daftar favorit. Klik ikon bookmark pada daftar untuk menyimpannya."
+          showAction={true}
+          actionLabel="Lihat Semua Lowongan"
+          onAction={() => onTabChange?.('all')}
+        />
+      );
+    }
+    return (
+      <PesanKosong
+        title="Belum ada data lowongan"
+        description="Tidak ada lowongan yang sesuai dengan kriteria pencarian atau filter yang Anda pilih."
+      />
+    );
+  };
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
       {jobs.length === 0 ? (
-        activeTab === 'saved' ? (
-          <PesanKosong
-            title="Belum Ada Lowongan Tersimpan"
-            description="Anda belum menandai lowongan pekerjaan ke daftar favorit. Klik ikon bookmark pada daftar untuk menyimpannya."
-            showAction={true}
-            actionLabel="Lihat Semua Lowongan"
-            onAction={() => onTabChange && onTabChange('all')}
-          />
-        ) : (
-          <PesanKosong
-            title="Belum ada data lowongan"
-            description="Tidak ada lowongan yang sesuai dengan kriteria pencarian atau filter yang Anda pilih."
-          />
-        )
+        renderEmptyState()
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

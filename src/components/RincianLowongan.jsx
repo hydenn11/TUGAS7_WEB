@@ -6,6 +6,33 @@ export default function RincianLowongan({ isOpen, job, onClose, onApply, onSave,
 
   const detail = getJobDetail(job);
 
+  const renderApplyAction = () => {
+    if (detail.isClosed) {
+      return (
+        <span className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed">
+          Lowongan Ditutup
+        </span>
+      );
+    }
+    if (isApplied) {
+      return (
+        <span className="px-5 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200 flex items-center gap-1.5">
+          <i className="fa-solid fa-circle-check text-emerald-500"></i>
+          <span>Sudah Dilamar</span>
+        </span>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => onApply(detail)}
+        className="px-6 py-2.5 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs shadow-md transition-all hover:shadow-lg"
+      >
+        Lamar Posisi Ini
+      </button>
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="relative w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto space-y-6">
@@ -82,8 +109,8 @@ export default function RincianLowongan({ isOpen, job, onClose, onApply, onSave,
             <i className="fa-solid fa-list-check text-[#16B3A3]"></i> Kualifikasi &amp; Persyaratan
           </h3>
           <ul className="space-y-2 text-xs sm:text-sm text-slate-600">
-            {detail.qualifications.map((q, idx) => (
-              <li key={idx} className="flex items-start gap-2">
+            {detail.qualifications.map((q) => (
+              <li key={q} className="flex items-start gap-2">
                 <i className="fa-solid fa-circle-check text-[#16B3A3] text-xs mt-1 shrink-0"></i>
                 <span>{q}</span>
               </li>
@@ -96,9 +123,9 @@ export default function RincianLowongan({ isOpen, job, onClose, onApply, onSave,
             <i className="fa-solid fa-layer-group text-[#16B3A3]"></i> Keahlian &amp; Kompetensi
           </h3>
           <div className="flex flex-wrap gap-1.5">
-            {detail.skills.map((sk, idx) => (
+            {detail.skills.map((sk) => (
               <span
-                key={idx}
+                key={sk}
                 className="px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/80"
               >
                 {sk}
@@ -112,8 +139,8 @@ export default function RincianLowongan({ isOpen, job, onClose, onApply, onSave,
             <i className="fa-solid fa-gift text-[#16B3A3]"></i> Benefit &amp; Fasilitas Karyawan
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
-            {detail.benefits.map((b, idx) => (
-              <div key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
+            {detail.benefits.map((b) => (
+              <div key={b} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
                 <i className="fa-solid fa-star text-amber-500 text-xs shrink-0"></i>
                 <span className="font-medium">{b}</span>
               </div>
@@ -143,23 +170,7 @@ export default function RincianLowongan({ isOpen, job, onClose, onApply, onSave,
             >
               Tutup
             </button>
-            {detail.isClosed ? (
-              <span className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed">
-                Lowongan Ditutup
-              </span>
-            ) : isApplied ? (
-              <span className="px-5 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200 flex items-center gap-1.5">
-                <i className="fa-solid fa-circle-check text-emerald-500"></i> Sudah Dilamar
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => onApply(detail)}
-                className="px-6 py-2.5 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs shadow-md transition-all hover:shadow-lg"
-              >
-                Lamar Posisi Ini
-              </button>
-            )}
+            {renderApplyAction()}
           </div>
         </div>
       </div>

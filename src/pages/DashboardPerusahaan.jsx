@@ -1,44 +1,83 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { safeSetStorageItem } from '../utils/storage';
+import { safeGetStorageItem, safeSetStorageItem } from '../utils/storage';
 import RincianKandidat from '../components/RincianKandidat';
 import FormulirEditLowongan from '../components/FormulirEditLowongan';
 import TabelLowonganPerusahaan from '../components/TabelLowonganPerusahaan';
 import FormulirPasangLowongan from '../components/FormulirPasangLowongan';
+
+const VALID_TABS = ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'];
+
+const STAGES = [
+  { key: 'baru', label: 'Terkirim / Baru', color: 'border-blue-400 bg-blue-50/50 text-blue-700', badge: 'bg-blue-100 text-blue-700' },
+  { key: 'review', label: 'Di-review', color: 'border-amber-400 bg-amber-50/50 text-amber-700', badge: 'bg-amber-100 text-amber-700' },
+  { key: 'interview', label: 'Interview', color: 'border-purple-400 bg-purple-50/50 text-purple-700', badge: 'bg-purple-100 text-purple-700' },
+  { key: 'diterima', label: 'Diterima', color: 'border-emerald-400 bg-emerald-50/50 text-emerald-700', badge: 'bg-emerald-100 text-emerald-700' },
+  { key: 'ditolak', label: 'Ditolak', color: 'border-rose-300 bg-rose-50/50 text-rose-700', badge: 'bg-rose-100 text-rose-700' },
+];
+
+function getStageLabel(stageKey) {
+  const found = STAGES.find((s) => s.key === stageKey);
+  return found ? found.label : stageKey;
+}
+
+function getInitialCompanyProfile(user) {
+  const saved = safeGetStorageItem('ayokerja_current_company', null);
+  if (saved && typeof saved === 'object') {
+    if (saved.name === 'daniramadh47' || !saved.name) {
+      return { ...saved, name: 'PT Google Indonesia' };
+    }
+    return saved;
+  }
+
+  const rawName = user?.namaPerusahaan;
+  const emailPrefix = user?.email?.split('@')[0];
+  const isUsername = rawName === 'daniramadh47' || (emailPrefix && rawName === emailPrefix);
+
+  return {
+    name: rawName && !isUsername ? rawName : 'PT Google Indonesia',
+    email: user?.email || 'recruitment@google.co.id',
+    industry: user?.industri || 'Teknologi Informasi & SaaS',
+    employeeSize: user?.ukuranKaryawan || '500 - 1.000 Karyawan',
+    address: user?.lokasi || 'Sentral Senayan II, Jl. Asia Afrika No.8, Gelora, Jakarta Pusat',
+    website: user?.website || 'https://careers.google.com',
+    linkedin: user?.linkedin || 'https://linkedin.com/company/google-indonesia',
+    instagram: user?.instagram || '@googleindonesia',
+    description:
+      user?.deskripsi ||
+      'Perusahaan teknologi multinasional terkemuka penyedia ekosistem mesin pencari, komputasi awan Google Cloud, dan infrastruktur digital global. Kami berkomitmen membangun lingkungan kerja inklusif dan mendorong inovasi digital bagi Indonesia.',
+    logo: user?.logo || '/assets/company-google.png',
+    banner: user?.banner || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
+  };
+}
+
+function readSavedArray(key, fallback) {
+  const saved = safeGetStorageItem(key, null);
+  return Array.isArray(saved) ? saved : fallback;
+}
 
 export default function DashboardPerusahaan() {
   const { user, logout, updateCompanyProfile } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Active Tab: 'dashboard' | 'jobs' | 'create-job' | 'applicants' | 'profile'
-  const validTabs = useMemo(() => ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'], []);
   const tabFromUrl = searchParams.get('tab');
 
-  const [activeTab, setActiveTabState] = useState(() => {
-    if (tabFromUrl && ['dashboard', 'jobs', 'create-job', 'applicants', 'profile'].includes(tabFromUrl)) {
-      return tabFromUrl;
-    }
-    return 'dashboard';
-  });
+  const [activeTab, setActiveTab] = useState(() =>
+    VALID_TABS.includes(tabFromUrl) ? tabFromUrl : 'dashboard'
+  );
 
-  const setActiveTab = (tab) => {
-    setActiveTabState(tab);
+  const switchTab = (tab) => {
+    setActiveTab(tab);
     setSearchParams(tab === 'dashboard' ? {} : { tab }, { replace: true });
   };
 
   useEffect(() => {
-    setActiveTabState((prev) => {
-      if (tabFromUrl && validTabs.includes(tabFromUrl) && tabFromUrl !== prev) {
-        return tabFromUrl;
-      }
-      if (!tabFromUrl && prev !== 'dashboard') {
-        return 'dashboard';
-      }
-      return prev;
-    });
-  }, [tabFromUrl, validTabs]);
+    const resolved = VALID_TABS.includes(tabFromUrl) ? tabFromUrl : 'dashboard';
+    setActiveTab((prev) => (prev !== resolved ? resolved : prev));
+  }, [tabFromUrl]);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
@@ -49,54 +88,15 @@ export default function DashboardPerusahaan() {
     setTimeout(() => setToastVisible(false), 3500);
   };
 
-  // State profil perusahaan
-  const [companyProfile, setCompanyProfile] = useState(() => {
-    const saved = localStorage.getItem('ayokerja_current_company');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed && (parsed.name === 'daniramadh47' || !parsed.name)) {
-          parsed.name = 'PT Google Indonesia';
-        }
-        return parsed;
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    const rawName = user?.namaPerusahaan;
-    const isUsername = rawName === 'daniramadh47' || (user?.email && rawName === user.email.split('@')[0]);
-    return {
-      name: rawName && !isUsername ? rawName : 'PT Google Indonesia',
-      email: user?.email || 'recruitment@google.co.id',
-      industry: user?.industri || 'Teknologi Informasi & SaaS',
-      employeeSize: user?.ukuranKaryawan || '500 - 1.000 Karyawan',
-      address: user?.lokasi || 'Sentral Senayan II, Jl. Asia Afrika No.8, Gelora, Jakarta Pusat',
-      website: user?.website || 'https://careers.google.com',
-      linkedin: user?.linkedin || 'https://linkedin.com/company/google-indonesia',
-      instagram: user?.instagram || '@googleindonesia',
-      description:
-        user?.deskripsi ||
-        'Perusahaan teknologi multinasional terkemuka penyedia ekosistem mesin pencari, komputasi awan Google Cloud, dan infrastruktur digital global. Kami berkomitmen membangun lingkungan kerja inklusif dan mendorong inovasi digital bagi Indonesia.',
-      logo: user?.logo || '/assets/company-google.png',
-      banner: user?.banner || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
-    };
-  });
+  const [companyProfile, setCompanyProfile] = useState(() => getInitialCompanyProfile(user));
 
   useEffect(() => {
     safeSetStorageItem('ayokerja_current_company', companyProfile);
   }, [companyProfile]);
 
   // State daftar lowongan
-  const [jobs, setJobs] = useState(() => {
-    const saved = localStorage.getItem('ayokerja_company_jobs');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return [
+  const [jobs, setJobs] = useState(() =>
+    readSavedArray('ayokerja_company_jobs', [
       {
         id: 1,
         title: 'Senior Cloud & DevOps Engineer',
@@ -177,24 +177,16 @@ export default function DashboardPerusahaan() {
         skills: ['Product Analytics', 'Growth Marketing', 'SQL', 'A/B Testing'],
         applicantsCount: 38,
       },
-    ];
-  });
+    ])
+  );
 
   useEffect(() => {
-    localStorage.setItem('ayokerja_company_jobs', JSON.stringify(jobs));
+    safeSetStorageItem('ayokerja_company_jobs', jobs);
   }, [jobs]);
 
   // State data pelamar
-  const [applicants, setApplicants] = useState(() => {
-    const saved = localStorage.getItem('ayokerja_company_applicants');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return [
+  const [applicants, setApplicants] = useState(() =>
+    readSavedArray('ayokerja_company_applicants', [
       {
         id: 101,
         name: 'Andi Pratama, S.Kom.',
@@ -323,8 +315,8 @@ export default function DashboardPerusahaan() {
         education: 'S1 Teknik Elektro, Universitas Indonesia',
         coverNote: 'Jadwal wawancara teknis arsitektur sistem terjadwal pada Kamis, 29 Oktober 2026.',
       },
-    ];
-  });
+    ])
+  );
 
   useEffect(() => {
     safeSetStorageItem('ayokerja_company_applicants', applicants);
@@ -396,19 +388,6 @@ export default function DashboardPerusahaan() {
     setCandidateModalOpen(true);
   };
 
-  const stages = [
-    { key: 'baru', label: 'Terkirim / Baru', color: 'border-blue-400 bg-blue-50/50 text-blue-700', badge: 'bg-blue-100 text-blue-700' },
-    { key: 'review', label: 'Di-review', color: 'border-amber-400 bg-amber-50/50 text-amber-700', badge: 'bg-amber-100 text-amber-700' },
-    { key: 'interview', label: 'Interview', color: 'border-purple-400 bg-purple-50/50 text-purple-700', badge: 'bg-purple-100 text-purple-700' },
-    { key: 'diterima', label: 'Diterima', color: 'border-emerald-400 bg-emerald-50/50 text-emerald-700', badge: 'bg-emerald-100 text-emerald-700' },
-    { key: 'ditolak', label: 'Ditolak', color: 'border-rose-300 bg-rose-50/50 text-rose-700', badge: 'bg-rose-100 text-rose-700' },
-  ];
-
-  function getStageLabel(stageKey) {
-    const found = stages.find((s) => s.key === stageKey);
-    return found ? found.label : stageKey;
-  }
-
   // State form profil
   const [profileForm, setProfileForm] = useState({ ...companyProfile });
 
@@ -434,7 +413,7 @@ export default function DashboardPerusahaan() {
   };
 
   const handleLogoFileChange = (e) => {
-    const file = e.target.files && e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -496,7 +475,7 @@ export default function DashboardPerusahaan() {
             <nav className="hidden md:flex items-center gap-7">
               <button
                 type="button"
-                onClick={() => setActiveTab('dashboard')}
+                onClick={() => switchTab('dashboard')}
                 className={
                   activeTab === 'dashboard'
                     ? 'text-white font-bold text-sm border-b-2 border-white pb-1 transition-all'
@@ -508,7 +487,7 @@ export default function DashboardPerusahaan() {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('jobs')}
+                onClick={() => switchTab('jobs')}
                 className={
                   activeTab === 'jobs'
                     ? 'text-white font-bold text-sm border-b-2 border-white pb-1 transition-all'
@@ -520,7 +499,7 @@ export default function DashboardPerusahaan() {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('create-job')}
+                onClick={() => switchTab('create-job')}
                 className={
                   activeTab === 'create-job'
                     ? 'text-white font-bold text-sm border-b-2 border-white pb-1 transition-all'
@@ -532,7 +511,7 @@ export default function DashboardPerusahaan() {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('applicants')}
+                onClick={() => switchTab('applicants')}
                 className={
                   activeTab === 'applicants'
                     ? 'text-white font-bold text-sm border-b-2 border-white pb-1 transition-all'
@@ -544,7 +523,7 @@ export default function DashboardPerusahaan() {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('profile')}
+                onClick={() => switchTab('profile')}
                 className={
                   activeTab === 'profile'
                     ? 'text-white font-bold text-sm border-b-2 border-white pb-1 transition-all'
@@ -601,7 +580,7 @@ export default function DashboardPerusahaan() {
           <div className="md:hidden bg-[#00193F] border-t border-white/15 px-4 pt-3 pb-6 space-y-2 shadow-xl">
             <button
               onClick={() => {
-                setActiveTab('dashboard');
+                switchTab('dashboard');
                 setMobileMenuOpen(false);
               }}
               className={`block w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold ${activeTab === 'dashboard' ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10'
@@ -611,7 +590,7 @@ export default function DashboardPerusahaan() {
             </button>
             <button
               onClick={() => {
-                setActiveTab('jobs');
+                switchTab('jobs');
                 setMobileMenuOpen(false);
               }}
               className={`block w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold ${activeTab === 'jobs' ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10'
@@ -621,7 +600,7 @@ export default function DashboardPerusahaan() {
             </button>
             <button
               onClick={() => {
-                setActiveTab('create-job');
+                switchTab('create-job');
                 setMobileMenuOpen(false);
               }}
               className={`block w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold ${activeTab === 'create-job' ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10'
@@ -631,7 +610,7 @@ export default function DashboardPerusahaan() {
             </button>
             <button
               onClick={() => {
-                setActiveTab('applicants');
+                switchTab('applicants');
                 setMobileMenuOpen(false);
               }}
               className={`block w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold ${activeTab === 'applicants' ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10'
@@ -641,7 +620,7 @@ export default function DashboardPerusahaan() {
             </button>
             <button
               onClick={() => {
-                setActiveTab('profile');
+                switchTab('profile');
                 setMobileMenuOpen(false);
               }}
               className={`block w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold ${activeTab === 'profile' ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10'
@@ -721,7 +700,7 @@ export default function DashboardPerusahaan() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setActiveTab('applicants')}
+                    onClick={() => switchTab('applicants')}
                     className="text-xs font-semibold text-[#16B3A3] hover:text-[#109485] px-3 py-1.5 rounded-lg hover:bg-teal-50 transition-colors"
                   >
                     Buka ATS Kanban
@@ -738,7 +717,7 @@ export default function DashboardPerusahaan() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => setActiveTab('applicants')}
+                    onClick={() => switchTab('applicants')}
                     className="mt-4 px-4 py-2 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white text-xs font-bold shadow-sm transition-all"
                   >
                     Buka Kelola Pelamar
@@ -809,7 +788,7 @@ export default function DashboardPerusahaan() {
             openEditJob={openEditJob}
             toggleJobStatus={toggleJobStatus}
             handleDeleteJob={handleDeleteJob}
-            onPasangLowongan={() => setActiveTab('create-job')}
+            onPasangLowongan={() => switchTab('create-job')}
           />
         )}
 
@@ -819,7 +798,7 @@ export default function DashboardPerusahaan() {
             onTambahLowongan={(createdJob) => {
               setJobs([createdJob, ...jobs]);
               showToast(`Lowongan "${createdJob.title}" berhasil dipublikasikan!`);
-              setActiveTab('jobs');
+              switchTab('jobs');
             }}
           />
         )}
@@ -901,7 +880,7 @@ export default function DashboardPerusahaan() {
 
             {atsViewMode === 'kanban' && (
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start">
-                {stages.map((stage) => {
+                {STAGES.map((stage) => {
                   const stageApplicants = filteredApplicants.filter((a) => a.stage === stage.key);
                   return (
                     <div key={stage.key} className="bg-slate-100/90 rounded-2xl p-3 border border-slate-200 flex flex-col min-h-[500px]">
@@ -927,8 +906,8 @@ export default function DashboardPerusahaan() {
                             </div>
 
                             <div className="flex flex-wrap gap-1 mb-3">
-                              {cand.skills.slice(0, 3).map((sk, idx) => (
-                                <span key={idx} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                              {cand.skills.slice(0, 3).map((sk) => (
+                                <span key={sk} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
                                   {sk}
                                 </span>
                               ))}
@@ -955,7 +934,7 @@ export default function DashboardPerusahaan() {
                                 onChange={(e) => handleStageChange(cand.id, e.target.value)}
                                 className="text-[10px] font-bold px-1.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none cursor-pointer"
                               >
-                                {stages.map((st) => (
+                                {STAGES.map((st) => (
                                   <option key={st.key} value={st.key}>
                                     {st.label}
                                   </option>
@@ -1005,7 +984,7 @@ export default function DashboardPerusahaan() {
                               onChange={(e) => handleStageChange(cand.id, e.target.value)}
                               className="text-xs font-bold px-2 py-1 rounded-xl border border-slate-200 bg-white text-slate-700 focus:outline-none cursor-pointer"
                             >
-                              {stages.map((st) => (
+                              {STAGES.map((st) => (
                                 <option key={st.key} value={st.key}>
                                   {st.label}
                                 </option>

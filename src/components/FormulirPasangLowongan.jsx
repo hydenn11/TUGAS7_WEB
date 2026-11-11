@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 
+function getStepCircleClass(currentStep, stepNumber) {
+  if (currentStep === stepNumber) {
+    return 'bg-[#16B3A3] text-white ring-4 ring-[#CCFBF1]';
+  }
+  if (currentStep > stepNumber) {
+    return 'bg-[#00193F] text-white';
+  }
+  return 'bg-slate-100 text-slate-400';
+}
+
 export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLowongan }) {
   const [createStep, setCreateStep] = useState(1);
   const [newJobTitle, setNewJobTitle] = useState('');
@@ -93,13 +103,7 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
               className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer"
             >
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
-                  createStep === s.step
-                    ? 'bg-[#16B3A3] text-white ring-4 ring-[#CCFBF1]'
-                    : createStep > s.step
-                    ? 'bg-[#00193F] text-white'
-                    : 'bg-slate-100 text-slate-400'
-                }`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${getStepCircleClass(createStep, s.step)}`}
               >
                 {createStep > s.step ? (
                   <i className="fa-solid fa-check text-[11px]"></i>
@@ -129,7 +133,7 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
               <span className="w-6 h-6 rounded-full bg-[#16B3A3] text-white text-xs flex items-center justify-center font-bold">
                 1
               </span>
-              Informasi Dasar Pekerjaan
+              <span>Informasi Dasar Pekerjaan</span>
             </h3>
 
             <div>
@@ -238,7 +242,7 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
               <span className="w-6 h-6 rounded-full bg-[#16B3A3] text-white text-xs flex items-center justify-center font-bold">
                 2
               </span>
-              Rentang Gaji &amp; Batas Waktu Tayang
+              <span>Rentang Gaji &amp; Batas Waktu Tayang</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -352,7 +356,7 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
               <span className="w-6 h-6 rounded-full bg-[#16B3A3] text-white text-xs flex items-center justify-center font-bold">
                 3
               </span>
-              Deskripsi Pekerjaan, Syarat &amp; Skill Tags
+              <span>Deskripsi Pekerjaan, Syarat &amp; Skill Tags</span>
             </h3>
 
             <div>
@@ -414,9 +418,9 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {newJobSkills.map((sk, idx) => (
+                {newJobSkills.map((sk) => (
                   <span
-                    key={idx}
+                    key={sk}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#CCFBF1] text-[#16B3A3] border border-[#99F6E4]"
                   >
                     {sk}
@@ -458,7 +462,7 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
               <span className="w-6 h-6 rounded-full bg-[#16B3A3] text-white text-xs flex items-center justify-center font-bold">
                 4
               </span>
-              Pratinjau Tampilan Lowongan Anda
+              <span>Pratinjau Tampilan Lowongan Anda</span>
             </h3>
 
             <div className="p-6 rounded-2xl border-2 border-dashed border-[#16B3A3]/40 bg-slate-50/70">
@@ -476,15 +480,16 @@ export default function FormulirPasangLowongan({ companyProfile = {}, onTambahLo
                     {newJobTitle || 'Judul Posisi Lowongan'}
                   </h4>
                   <p className="text-xs text-slate-600 font-medium">
-                    {companyProfile?.name || 'Perusahaan Mitra'} • 📍 {newJobLocation}
+                    <span>{companyProfile?.name || 'Perusahaan Mitra'}</span>
+                    <span>{` • 📍 ${newJobLocation}`}</span>
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-1.5 mb-4">
-                {newJobSkills.map((sk, idx) => (
+                {newJobSkills.map((sk) => (
                   <span
-                    key={idx}
+                    key={sk}
                     className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-white border border-slate-200 text-slate-700"
                   >
                     {sk}

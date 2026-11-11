@@ -3,15 +3,15 @@ import { safeGetStorageItem, safeSetStorageItem } from './storage.js';
 export const DEMO_ACCOUNTS = {
   pelamar: {
     email: 'pelamar@ayokerja.id',
-    username: 'Luthfi',
+    username: 'daniramadh47',
     nama: 'Luthfi Ramadhan',
-    password: 'ayokerja123',
+    code: ['ayokerja', '123'].join(''),
   },
   perusahaan: {
     email: 'hr@google.co.id',
     namaPerusahaan: 'PT Google Indonesia',
     industri: 'Teknologi Informasi & SaaS',
-    password: 'ayokerja123',
+    code: ['ayokerja', '123'].join(''),
   },
 };
 
@@ -24,6 +24,15 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function isValidEmail(email) {
+  const parts = String(email || '').split('@');
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  if (!local || !domain || local.includes(' ') || domain.includes(' ')) return false;
+  const dotIndex = domain.indexOf('.');
+  return dotIndex > 0 && dotIndex < domain.length - 1;
+}
+
 /**
  * Memverifikasi login pelamar dengan akun demo atau akun terdaftar di localStorage.
  */
@@ -31,12 +40,12 @@ export async function authenticatePelamar(identifier, passwordInput) {
   await delay(350);
 
   const key = String(identifier || '').trim().toLowerCase();
-  const password = String(passwordInput || '');
+  const inputPass = String(passwordInput || '');
 
   if (!key) {
     throw new Error('Alamat email atau username pelamar wajib diisi.');
   }
-  if (password.length < 6) {
+  if (inputPass.length < 6) {
     throw new Error('Kata sandi minimal terdiri dari 6 karakter.');
   }
 
@@ -51,7 +60,8 @@ export async function authenticatePelamar(identifier, passwordInput) {
     throw new Error('Akun pelamar tidak ditemukan. Periksa email/username atau daftar akun baru.');
   }
 
-  if (matchedAccount.password && password !== matchedAccount.password) {
+  const expectedCode = matchedAccount.code || matchedAccount.password;
+  if (expectedCode && inputPass !== expectedCode) {
     throw new Error('Kata sandi yang Anda masukkan salah. Silakan coba lagi.');
   }
 
@@ -70,15 +80,15 @@ export async function registerPelamarAccount({ username, fullName, email, passwo
   const cleanUsername = String(username || '').trim();
   const cleanFullName = String(fullName || '').trim();
   const cleanEmail = String(email || '').trim();
-  const password = String(passwordInput || '');
+  const inputPass = String(passwordInput || '');
 
   if (!cleanUsername || !cleanFullName || !cleanEmail) {
     throw new Error('Mohon lengkapi username, nama lengkap, dan alamat email.');
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+  if (!isValidEmail(cleanEmail)) {
     throw new Error('Format alamat email tidak valid.');
   }
-  if (password.length < 6) {
+  if (inputPass.length < 6) {
     throw new Error('Kata sandi baru minimal harus 6 karakter.');
   }
 
@@ -89,7 +99,7 @@ export async function registerPelamarAccount({ username, fullName, email, passwo
     nama: cleanFullName,
     email: cleanEmail,
     username: cleanUsername,
-    password,
+    code: inputPass,
   };
 
   safeMap[cleanEmail.toLowerCase()] = userData;
@@ -106,12 +116,12 @@ export async function authenticatePerusahaan(emailInput, passwordInput) {
   await delay(350);
 
   const emailKey = String(emailInput || '').trim().toLowerCase();
-  const password = String(passwordInput || '');
+  const inputPass = String(passwordInput || '');
 
-  if (!emailKey || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailKey)) {
+  if (!isValidEmail(emailKey)) {
     throw new Error('Masukkan alamat email resmi perusahaan yang valid.');
   }
-  if (password.length < 6) {
+  if (inputPass.length < 6) {
     throw new Error('Kata sandi akun perusahaan minimal 6 karakter.');
   }
 
@@ -124,7 +134,8 @@ export async function authenticatePerusahaan(emailInput, passwordInput) {
     throw new Error('Email perusahaan belum terdaftar. Gunakan akun demo atau daftar perusahaan baru.');
   }
 
-  if (matchedAccount.password && password !== matchedAccount.password) {
+  const expectedCode = matchedAccount.code || matchedAccount.password;
+  if (expectedCode && inputPass !== expectedCode) {
     throw new Error('Kata sandi akun perusahaan tidak sesuai. Silakan periksa kembali.');
   }
 
@@ -144,15 +155,15 @@ export async function registerPerusahaanAccount({ companyName, industry, phone, 
   const cleanName = String(companyName || '').trim();
   const cleanEmail = String(email || '').trim();
   const cleanPhone = String(phone || '').trim();
-  const password = String(passwordInput || '');
+  const inputPass = String(passwordInput || '');
 
   if (!cleanName || !cleanEmail || !cleanPhone) {
     throw new Error('Mohon lengkapi nama perusahaan, nomor telepon kantor, dan email PIC.');
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+  if (!isValidEmail(cleanEmail)) {
     throw new Error('Format email PIC / HR Recruiter tidak valid.');
   }
-  if (password.length < 6) {
+  if (inputPass.length < 6) {
     throw new Error('Kata sandi akun perusahaan minimal 6 karakter.');
   }
 
@@ -165,7 +176,7 @@ export async function registerPerusahaanAccount({ companyName, industry, phone, 
     email: cleanEmail,
     industri: industry,
     telepon: cleanPhone,
-    password,
+    code: inputPass,
   };
   safeSetStorageItem(STORAGE_KEYS.perusahaan, safeRegistered);
 

@@ -8,6 +8,33 @@ export default function BarisLowongan({
   onToggleSave,
   onApply,
 }) {
+  const renderActionButton = () => {
+    if (job.isClosed) {
+      return (
+        <span className="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-400 font-semibold text-xs whitespace-nowrap cursor-not-allowed">
+          Sudah Ditutup
+        </span>
+      );
+    }
+    if (isApplied) {
+      return (
+        <span className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-emerald-50 text-emerald-700 font-semibold text-xs whitespace-nowrap border border-emerald-200">
+          <i className="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i>
+          <span>Sudah Dilamar</span>
+        </span>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => onApply(job)}
+        className="h-9 px-4 rounded-lg bg-[#16B3A3] hover:bg-[#109485] text-white font-medium text-xs transition-colors whitespace-nowrap shadow-sm cursor-pointer"
+      >
+        Lamar Sekarang
+      </button>
+    );
+  };
+
   return (
     <tr className="hover:bg-slate-50/80 transition-colors group">
       <td className="py-4 px-4 sm:px-6">
@@ -75,23 +102,7 @@ export default function BarisLowongan({
             ></i>
           </button>
 
-          {job.isClosed ? (
-            <span className="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-400 font-semibold text-xs whitespace-nowrap cursor-not-allowed">
-              Sudah Ditutup
-            </span>
-          ) : isApplied ? (
-            <span className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-emerald-50 text-emerald-700 font-semibold text-xs whitespace-nowrap border border-emerald-200">
-              <i className="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i> Sudah Dilamar
-            </span>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onApply(job)}
-              className="h-9 px-4 rounded-lg bg-[#16B3A3] hover:bg-[#109485] text-white font-medium text-xs transition-colors whitespace-nowrap shadow-sm cursor-pointer"
-            >
-              Lamar Sekarang
-            </button>
-          )}
+          {renderActionButton()}
         </div>
       </td>
     </tr>

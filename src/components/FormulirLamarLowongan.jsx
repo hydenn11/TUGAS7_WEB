@@ -117,7 +117,7 @@ export default function FormulirLamarLowongan({
                 <label htmlFor="resumeOptProfile" className="text-xs cursor-pointer flex-1">
                   <span className="font-bold text-[#00193F] flex items-center gap-1.5">
                     <i className="fa-solid fa-id-card text-[#16B3A3]"></i>
-                    Gunakan Profil Terdaftar AYOKERJA!
+                    <span>Gunakan Profil Terdaftar AYOKERJA!</span>
                   </span>
                   <span className="text-slate-500 mt-0.5 text-[11px] leading-relaxed block">
                     Sistem otomatis merangkum data pendidikan, ringkasan keahlian, dan riwayat dari profil akun <span className="font-semibold text-slate-700">{user?.nama || 'Anda'}</span>.
@@ -144,7 +144,7 @@ export default function FormulirLamarLowongan({
                 <div className="text-xs flex-1">
                   <label htmlFor="resumeOptUpload" className="font-bold text-[#00193F] flex items-center gap-1.5 cursor-pointer">
                     <i className="fa-solid fa-file-arrow-up text-[#16B3A3]"></i>
-                    Unggah Berkas CV Baru (PDF/DOC)
+                    <span>Unggah Berkas CV Baru (PDF/DOC)</span>
                   </label>
                   <div className="mt-2">
                     <div className="flex items-center gap-2">

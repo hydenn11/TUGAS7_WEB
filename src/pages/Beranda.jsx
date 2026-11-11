@@ -32,7 +32,7 @@ export default function Beranda() {
   };
 
   const handleSave = (job) => {
-    if (!user || user.role !== 'pelamar') {
+    if (user?.role !== 'pelamar') {
       setAuthModal({
         isOpen: true,
         title: 'Masuk Akun Pelamar Terlebih Dahulu',
@@ -437,9 +437,9 @@ export default function Beranda() {
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 mb-3">
-                      {job.tags.map((t, idx) => (
+                      {job.tags.map((t) => (
                         <span
-                          key={idx}
+                          key={t.label}
                           className={`px-2.5 py-1 rounded-md text-[11px] font-medium ${t.bg} ${t.text}`}
                         >
                           {t.label}

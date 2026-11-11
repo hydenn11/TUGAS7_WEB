@@ -1,82 +1,40 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { safeSetStorageItem } from '../utils/storage';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { safeGetStorageItem, safeSetStorageItem } from '../utils/storage';
 
 const AuthContext = createContext();
 
+const STORAGE_KEY = 'ayokerja_pelamar_user';
+const SAVED_JOBS_KEY = 'ayokerja_saved_jobs';
+const SAVED_JOB_DETAILS_KEY = 'ayokerja_saved_job_details';
+const APPLIED_JOBS_KEY = 'ayokerja_applied_jobs';
+
+function getUserKey(usr) {
+  if (!usr) return 'guest';
+  return (usr.email || usr.nama || 'default').trim().toLowerCase();
+}
+
+function readStoredUser() {
+  const parsed = safeGetStorageItem(STORAGE_KEY, null);
+  return parsed?.isLoggedIn ? parsed : null;
+}
+
+function readPelamarScopedData(prefix, fallback) {
+  const parsed = readStoredUser();
+  if (parsed?.role === 'pelamar') {
+    const userKey = getUserKey(parsed);
+    const data = safeGetStorageItem(`${prefix}_${userKey}`, null);
+    if (data !== null) return data;
+  }
+  return fallback;
+}
+
 export const AuthProvider = ({ children }) => {
-  const STORAGE_KEY = 'ayokerja_pelamar_user';
-  const SAVED_JOBS_KEY = 'ayokerja_saved_jobs';
-  const SAVED_JOB_DETAILS_KEY = 'ayokerja_saved_job_details';
-  const APPLIED_JOBS_KEY = 'ayokerja_applied_jobs';
-
-  const getUserKey = (usr) => {
-    if (!usr) return 'guest';
-    return (usr.email || usr.nama || 'default').trim().toLowerCase();
-  };
-
-  const [user, setUser] = useState(() => {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data && data !== 'logged_out') {
-        const parsed = JSON.parse(data);
-        if (parsed && parsed.isLoggedIn) return parsed;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
-  });
-
-  const [savedJobIds, setSavedJobIds] = useState(() => {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data && data !== 'logged_out') {
-        const parsed = JSON.parse(data);
-        if (parsed && parsed.isLoggedIn && parsed.role === 'pelamar') {
-          const userKey = getUserKey(parsed);
-          const saved = localStorage.getItem(`${SAVED_JOBS_KEY}_${userKey}`);
-          if (saved) return JSON.parse(saved);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return [];
-  });
-
-  const [savedJobDetails, setSavedJobDetails] = useState(() => {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data && data !== 'logged_out') {
-        const parsed = JSON.parse(data);
-        if (parsed && parsed.isLoggedIn && parsed.role === 'pelamar') {
-          const userKey = getUserKey(parsed);
-          const saved = localStorage.getItem(`${SAVED_JOB_DETAILS_KEY}_${userKey}`);
-          if (saved) return JSON.parse(saved);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return {};
-  });
-
-  const [appliedJobs, setAppliedJobs] = useState(() => {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data && data !== 'logged_out') {
-        const parsed = JSON.parse(data);
-        if (parsed && parsed.isLoggedIn && parsed.role === 'pelamar') {
-          const userKey = getUserKey(parsed);
-          const applied = localStorage.getItem(`${APPLIED_JOBS_KEY}_${userKey}`);
-          if (applied) return JSON.parse(applied);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return [];
-  });
+  const [user, setUser] = useState(readStoredUser);
+  const [savedJobIds, setSavedJobIds] = useState(() => readPelamarScopedData(SAVED_JOBS_KEY, []));
+  const [savedJobDetails, setSavedJobDetails] = useState(() =>
+    readPelamarScopedData(SAVED_JOB_DETAILS_KEY, {})
+  );
+  const [appliedJobs, setAppliedJobs] = useState(() => readPelamarScopedData(APPLIED_JOBS_KEY, []));
 
   useEffect(() => {
     if (user) {
@@ -87,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
-    if (user && user.role === 'pelamar') {
+    if (user?.role === 'pelamar') {
       const userKey = getUserKey(user);
       safeSetStorageItem(`${SAVED_JOBS_KEY}_${userKey}`, savedJobIds);
       safeSetStorageItem(`${SAVED_JOB_DETAILS_KEY}_${userKey}`, savedJobDetails);
@@ -95,21 +53,16 @@ export const AuthProvider = ({ children }) => {
   }, [savedJobIds, savedJobDetails, user]);
 
   useEffect(() => {
-    if (user && user.role === 'pelamar') {
+    if (user?.role === 'pelamar') {
       const userKey = getUserKey(user);
-      localStorage.setItem(`${APPLIED_JOBS_KEY}_${userKey}`, JSON.stringify(appliedJobs));
+      safeSetStorageItem(`${APPLIED_JOBS_KEY}_${userKey}`, appliedJobs);
     }
   }, [appliedJobs, user]);
 
-  const loginPelamar = (userData) => {
-    let saved = {};
+  const loginPelamar = useCallback((userData) => {
     const userKey = (userData.email || userData.nama || 'default').toLowerCase();
-    try {
-      const savedProfiles = JSON.parse(localStorage.getItem('ayokerja_user_profiles') || '{}');
-      saved = savedProfiles[userKey] || {};
-    } catch {
-      saved = {};
-    }
+    const savedProfiles = safeGetStorageItem('ayokerja_user_profiles', {});
+    const saved = savedProfiles?.[userKey] || {};
 
     const newUser = {
       isLoggedIn: true,
@@ -125,31 +78,26 @@ export const AuthProvider = ({ children }) => {
     };
     setUser(newUser);
 
-    try {
-      const savedJobsData = localStorage.getItem(`${SAVED_JOBS_KEY}_${userKey}`);
-      setSavedJobIds(savedJobsData ? JSON.parse(savedJobsData) : []);
+    const savedJobs = safeGetStorageItem(`${SAVED_JOBS_KEY}_${userKey}`, []);
+    setSavedJobIds(Array.isArray(savedJobs) ? savedJobs : []);
 
-      const appliedData = localStorage.getItem(`${APPLIED_JOBS_KEY}_${userKey}`);
-      setAppliedJobs(appliedData ? JSON.parse(appliedData) : []);
-    } catch {
-      setSavedJobIds([]);
-      setAppliedJobs([]);
-    }
-  };
+    const savedApplied = safeGetStorageItem(`${APPLIED_JOBS_KEY}_${userKey}`, []);
+    setAppliedJobs(Array.isArray(savedApplied) ? savedApplied : []);
+  }, []);
 
-  const loginPerusahaan = (companyData) => {
-    let saved = {};
+  const loginPerusahaan = useCallback((companyData) => {
     const compKey = (companyData.email || companyData.namaPerusahaan || 'default').toLowerCase();
-    try {
-      const savedProfiles = JSON.parse(localStorage.getItem('ayokerja_company_profiles') || '{}');
-      saved = savedProfiles[compKey] || {};
-    } catch {
-      saved = {};
-    }
+    const savedProfiles = safeGetStorageItem('ayokerja_company_profiles', {});
+    const saved = savedProfiles?.[compKey] || {};
 
-    const isGoogle = (saved.namaPerusahaan || companyData.namaPerusahaan || '').toLowerCase().includes('google') ||
+    const isGoogle =
+      (saved.namaPerusahaan || companyData.namaPerusahaan || '').toLowerCase().includes('google') ||
       (companyData.email || '').toLowerCase().includes('google');
     const compName = saved.namaPerusahaan || companyData.namaPerusahaan || 'PT Perusahaan Mitra';
+
+    const defaultDesc = isGoogle
+      ? 'Perusahaan teknologi multinasional penyedia ekosistem mesin pencari, komputasi awan Google Cloud, dan infrastruktur kecerdasan buatan.'
+      : `${compName} adalah entitas korporasi resmi yang membuka peluang karir melalui platform rekrutmen AYOKERJA!.`;
 
     const newCompany = {
       isLoggedIn: true,
@@ -162,47 +110,45 @@ export const AuthProvider = ({ children }) => {
       website: saved.website || (isGoogle ? 'https://careers.google.com' : 'https://perusahaan.co.id'),
       linkedin: saved.linkedin || (isGoogle ? 'https://linkedin.com/company/google-indonesia' : ''),
       instagram: saved.instagram || (isGoogle ? '@googleindonesia' : ''),
-      deskripsi: saved.deskripsi || (isGoogle
-        ? 'Perusahaan teknologi multinasional penyedia ekosistem mesin pencari, komputasi awan Google Cloud, dan infrastruktur kecerdasan buatan.'
-        : `${compName} adalah entitas korporasi resmi yang membuka peluang karir melalui platform rekrutmen AYOKERJA!.`),
+      deskripsi: saved.deskripsi || defaultDesc,
       logo: saved.logo || (isGoogle ? '/assets/company-google.png' : '/assets/logo.png'),
       banner: saved.banner || '',
     };
     setUser(newCompany);
     setSavedJobIds([]);
     setAppliedJobs([]);
-  };
+  }, []);
 
-  const updateCompanyProfile = (fields) => {
+  const updateCompanyProfile = useCallback((fields) => {
     setUser((prev) => {
       if (!prev) return prev;
       const updated = { ...prev, ...fields };
-      try {
-        const savedProfiles = JSON.parse(localStorage.getItem('ayokerja_company_profiles') || '{}');
-        const compKey = (updated.email || updated.namaPerusahaan || 'default').toLowerCase();
-        savedProfiles[compKey] = { ...savedProfiles[compKey], ...fields };
-        safeSetStorageItem('ayokerja_company_profiles', savedProfiles);
-      } catch (e) {
-        console.error(e);
-      }
+      const savedProfiles = safeGetStorageItem('ayokerja_company_profiles', {});
+      const compKey = (updated.email || updated.namaPerusahaan || 'default').toLowerCase();
+      const nextProfiles = {
+        ...savedProfiles,
+        [compKey]: { ...savedProfiles?.[compKey], ...fields },
+      };
+      safeSetStorageItem('ayokerja_company_profiles', nextProfiles);
       return updated;
     });
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     setSavedJobIds([]);
     setAppliedJobs([]);
-  };
+  }, []);
 
-  const updateProfile = (fields) => {
+  const updateProfile = useCallback((fields) => {
     setUser((prev) => {
       if (!prev) return prev;
       const updated = { ...prev, ...fields };
-      try {
-        const savedProfiles = JSON.parse(localStorage.getItem('ayokerja_user_profiles') || '{}');
-        const userKey = getUserKey(updated);
-        savedProfiles[userKey] = {
+      const savedProfiles = safeGetStorageItem('ayokerja_user_profiles', {});
+      const userKey = getUserKey(updated);
+      const nextProfiles = {
+        ...savedProfiles,
+        [userKey]: {
           nama: updated.nama,
           email: updated.email,
           posisi: updated.posisi,
@@ -210,17 +156,15 @@ export const AuthProvider = ({ children }) => {
           telepon: updated.telepon,
           linkedin: updated.linkedin,
           ringkasan: updated.ringkasan,
-        };
-        safeSetStorageItem('ayokerja_user_profiles', savedProfiles);
-      } catch (e) {
-        console.error(e);
-      }
+        },
+      };
+      safeSetStorageItem('ayokerja_user_profiles', nextProfiles);
       return updated;
     });
-  };
+  }, []);
 
-  const toggleSaveJob = (jobId, jobData = null) => {
-    if (!user || user.role !== 'pelamar') {
+  const toggleSaveJob = useCallback((jobId, jobData = null) => {
+    if (user?.role !== 'pelamar') {
       return false;
     }
     setSavedJobIds((prev) => {
@@ -232,21 +176,20 @@ export const AuthProvider = ({ children }) => {
           return updated;
         });
         return prev.filter((id) => id !== jobId);
-      } else {
-        if (jobData) {
-          setSavedJobDetails((prevDetails) => ({
-            ...prevDetails,
-            [jobId]: jobData,
-          }));
-        }
-        return [...prev, jobId];
       }
+      if (jobData) {
+        setSavedJobDetails((prevDetails) => ({
+          ...prevDetails,
+          [jobId]: jobData,
+        }));
+      }
+      return [...prev, jobId];
     });
     return true;
-  };
+  }, [user]);
 
-  const applyJob = (job, applicationDetails = {}) => {
-    if (!user || user.role !== 'pelamar') {
+  const applyJob = useCallback((job, applicationDetails = {}) => {
+    if (user?.role !== 'pelamar') {
       return false;
     }
     if (!appliedJobs.some((item) => item.id === job.id)) {
@@ -271,36 +214,50 @@ export const AuthProvider = ({ children }) => {
       return true;
     }
     return false;
-  };
+  }, [user, appliedJobs]);
 
-  const withdrawApplication = (jobId) => {
-    if (!user || user.role !== 'pelamar') {
+  const withdrawApplication = useCallback((jobId) => {
+    if (user?.role !== 'pelamar') {
       return false;
     }
     setAppliedJobs((prev) => prev.filter((item) => item.id !== jobId));
     return true;
-  };
+  }, [user]);
 
-  const isPelamar = Boolean(user && user.role === 'pelamar');
+  const isPelamar = user?.role === 'pelamar';
+
+  const contextValue = useMemo(() => ({
+    user,
+    isPelamar,
+    loginPelamar,
+    loginPerusahaan,
+    logout,
+    updateProfile,
+    updateCompanyProfile,
+    savedJobIds,
+    savedJobDetails,
+    toggleSaveJob,
+    appliedJobs,
+    applyJob,
+    withdrawApplication,
+  }), [
+    user,
+    isPelamar,
+    loginPelamar,
+    loginPerusahaan,
+    logout,
+    updateProfile,
+    updateCompanyProfile,
+    savedJobIds,
+    savedJobDetails,
+    toggleSaveJob,
+    appliedJobs,
+    applyJob,
+    withdrawApplication,
+  ]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isPelamar,
-        loginPelamar,
-        loginPerusahaan,
-        logout,
-        updateProfile,
-        updateCompanyProfile,
-        savedJobIds,
-        savedJobDetails,
-        toggleSaveJob,
-        appliedJobs,
-        applyJob,
-        withdrawApplication,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

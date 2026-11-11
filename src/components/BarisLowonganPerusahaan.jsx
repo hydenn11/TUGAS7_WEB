@@ -1,11 +1,28 @@
 import React from 'react';
 
+const JOB_STATUS_STYLES = {
+  Aktif: {
+    badge: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    dot: 'bg-emerald-500',
+  },
+  Draft: {
+    badge: 'bg-blue-50 text-blue-700 border border-blue-200',
+    dot: 'bg-blue-500',
+  },
+  Ditutup: {
+    badge: 'bg-rose-50 text-rose-700 border border-rose-200',
+    dot: 'bg-rose-500',
+  },
+};
+
 export default function BarisLowonganPerusahaan({
   job,
   openEditJob,
   toggleJobStatus,
   handleDeleteJob,
 }) {
+  const statusStyle = JOB_STATUS_STYLES[job.status] || JOB_STATUS_STYLES.Ditutup;
+
   return (
     <tr className="hover:bg-slate-50/80 transition-colors">
       <td className="py-4 px-5">
@@ -35,24 +52,10 @@ export default function BarisLowonganPerusahaan({
       </td>
       <td className="py-4 px-4">
         <span
-          className={`px-3 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1 ${
-            job.status === 'Aktif'
-              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-              : job.status === 'Draft'
-              ? 'bg-blue-50 text-blue-700 border border-blue-200'
-              : 'bg-rose-50 text-rose-700 border border-rose-200'
-          }`}
+          className={`px-3 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1 ${statusStyle.badge}`}
         >
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${
-              job.status === 'Aktif'
-                ? 'bg-emerald-500'
-                : job.status === 'Draft'
-                ? 'bg-blue-500'
-                : 'bg-rose-500'
-            }`}
-          ></span>
-          {job.status}
+          <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`}></span>
+          <span>{job.status}</span>
         </span>
       </td>
       <td className="py-4 px-5 text-right">

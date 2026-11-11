@@ -16,10 +16,10 @@ export default function PeringatanWajibLogin({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div
-        className="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 text-center transform transition-all animate-in zoom-in-95 duration-200"
-        role="dialog"
+      <dialog
+        open
         aria-modal="true"
+        className="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 text-center transform transition-all animate-in zoom-in-95 duration-200 m-0"
       >
         <button
           type="button"
@@ -77,7 +77,7 @@ export default function PeringatanWajibLogin({
             Nanti Saja
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }

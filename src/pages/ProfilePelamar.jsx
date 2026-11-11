@@ -64,8 +64,9 @@ export default function ProfilePelamar() {
   };
 
   const handleResumeUpload = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const fileName = e.target.files[0].name;
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileName = file.name;
       setResumeFileName(fileName);
       triggerAlert(`Berkas resume berhasil diperbarui: ${fileName}`);
     }
@@ -172,7 +173,7 @@ export default function ProfilePelamar() {
                     accept="image/*"
                     className="hidden"
                     onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
+                      if (e.target.files?.[0]) {
                         triggerAlert('Foto profil berhasil diperbarui!');
                       }
                     }}
@@ -256,24 +257,23 @@ export default function ProfilePelamar() {
                   </div>
                 </div>
 
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    alert(`Mengunduh berkas resume: ${resumeFileName}`);
-                  }}
-                  className="p-2 rounded-lg text-slate-500 hover:text-[#16B3A3] hover:bg-white transition-colors shrink-0"
+                <button
+                  type="button"
+                  onClick={() => triggerAlert(`Mengunduh berkas resume: ${resumeFileName}`)}
+                  className="p-2 rounded-lg text-slate-500 hover:text-[#16B3A3] hover:bg-white transition-colors shrink-0 cursor-pointer"
                   title="Unduh Berkas Resume"
+                  aria-label="Unduh Berkas Resume"
                 >
                   <i className="fa-solid fa-download"></i>
-                </a>
+                </button>
               </div>
 
               <label
                 htmlFor="uploadResumeInput"
                 className="mt-4 w-full py-2.5 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-colors"
               >
-                <i className="fa-solid fa-cloud-arrow-up"></i> Unggah / Ganti Resume
+                <i className="fa-solid fa-cloud-arrow-up"></i>
+                <span>Unggah / Ganti Resume</span>
                 <input
                   type="file"
                   id="uploadResumeInput"
