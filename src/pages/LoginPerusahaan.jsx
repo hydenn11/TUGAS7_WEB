@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { safeSetStorageItem } from '../utils/storage';
+import {
+  authenticatePerusahaan,
+  registerPerusahaanAccount,
+} from '../utils/authService';
+import { AuthAlert } from '../components/AuthFeedback';
 
 export default function LoginPerusahaan() {
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyPassword, setCompanyPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
   // Register
   const [regCompanyName, setRegCompanyName] = useState('');
@@ -18,77 +26,63 @@ export default function LoginPerusahaan() {
   const { loginPerusahaan } = useAuth();
   const navigate = useNavigate();
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    const emailKey = companyEmail.trim().toLowerCase();
-
-    let compData = null;
-    try {
-      const registered = JSON.parse(localStorage.getItem('ayokerja_registered_perusahaan') || '{}');
-      compData = registered[emailKey];
-    } catch (err) {
-      console.error(err);
-    }
-
-    let companyName = compData?.namaPerusahaan;
-    let industry = compData?.industri;
-
-    if (!companyName) {
-      const domainPart = emailKey.split('@')[1]?.split('.')[0];
-      if (domainPart && domainPart !== 'gmail' && domainPart !== 'yahoo') {
-        companyName = 'PT ' + domainPart.charAt(0).toUpperCase() + domainPart.slice(1) + ' Indonesia';
-        industry = industry || 'Teknologi & Informasi';
-      } else {
-        companyName = 'PT Google Indonesia';
-        industry = industry || 'Teknologi Informasi & SaaS';
-      }
-    }
-
-    loginPerusahaan({
-      namaPerusahaan: companyName,
-      email: companyEmail.trim(),
-      industri: industry || 'Teknologi & Bisnis Digital',
-    });
-    navigate('/company-dashboard');
+  const handleTabSwitch = (tab) => {
+    setActiveTab(tab);
+    setFeedback(null);
   };
 
-  const handleRegisterSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (!regCompanyName.trim() || !regEmail.trim()) {
-      alert('Mohon lengkapi nama perusahaan dan email PIC.');
-      return;
-    }
+    setFeedback(null);
+    setIsSubmitting(true);
 
     try {
-      const registered = JSON.parse(localStorage.getItem('ayokerja_registered_perusahaan') || '{}');
-      registered[regEmail.trim().toLowerCase()] = {
-        namaPerusahaan: regCompanyName.trim(),
-        email: regEmail.trim(),
-        industri: regIndustry,
-        telepon: regPhone,
-        password: regPassword,
-      };
-      safeSetStorageItem('ayokerja_registered_perusahaan', registered);
-
-      const compProfiles = JSON.parse(localStorage.getItem('ayokerja_company_profiles') || '{}');
-      compProfiles[regEmail.trim().toLowerCase()] = {
-        namaPerusahaan: regCompanyName.trim(),
-        email: regEmail.trim(),
-        industri: regIndustry,
-        telepon: regPhone,
-        lokasi: 'Jakarta, Indonesia',
-        ukuranKaryawan: '50 - 200 Karyawan',
-        deskripsi: `${regCompanyName.trim()} adalah entitas bisnis resmi yang membuka peluang rekrutmen melalui portal AYOKERJA!.`,
-      };
-      safeSetStorageItem('ayokerja_company_profiles', compProfiles);
+      const companyData = await authenticatePerusahaan(companyEmail, companyPassword);
+      loginPerusahaan(companyData);
+      navigate('/company-dashboard');
     } catch (err) {
-      console.error(err);
+      setFeedback({
+        type: 'error',
+        message: err.message || 'Gagal masuk ke portal perusahaan. Periksa email dan kata sandi.',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    alert('Pendaftaran perusahaan berhasil! Silakan masuk dengan akun yang telah didaftarkan.');
-    setCompanyEmail(regEmail.trim());
-    setCompanyPassword('');
-    setActiveTab('login');
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setFeedback(null);
+    setIsSubmitting(true);
+
+    try {
+      const savedCompany = await registerPerusahaanAccount({
+        companyName: regCompanyName,
+        industry: regIndustry,
+        phone: regPhone,
+        email: regEmail,
+        passwordInput: regPassword,
+      });
+
+      setCompanyEmail(savedCompany.email);
+      setCompanyPassword('');
+      setRegCompanyName('');
+      setRegPhone('');
+      setRegEmail('');
+      setRegPassword('');
+      setActiveTab('login');
+      setFeedback({
+        type: 'success',
+        message: `Pendaftaran ${savedCompany.namaPerusahaan} berhasil! Silakan masuk dengan akun yang baru didaftarkan.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.message || 'Pendaftaran perusahaan gagal. Periksa kembali data yang diinput.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -116,7 +110,7 @@ export default function LoginPerusahaan() {
           <div className="flex p-1 bg-slate-100 rounded-2xl mb-6">
             <button
               type="button"
-              onClick={() => setActiveTab('login')}
+              onClick={() => handleTabSwitch('login')}
               className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'login' ? 'bg-white text-[#00193F] shadow-sm' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -125,7 +119,7 @@ export default function LoginPerusahaan() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('register')}
+              onClick={() => handleTabSwitch('register')}
               className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === 'register' ? 'bg-white text-[#00193F] shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -134,8 +128,10 @@ export default function LoginPerusahaan() {
             </button>
           </div>
 
+          <AuthAlert feedback={feedback} onDismiss={() => setFeedback(null)} />
+
           {activeTab === 'login' && (
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <form onSubmit={(e) => { void handleLoginSubmit(e); }} className="space-y-4">
               <div>
                 <label htmlFor="companyEmailInput" className="block text-xs font-bold text-slate-700 mb-1.5">Email Resmi Perusahaan / HR</label>
                 <input
@@ -152,19 +148,38 @@ export default function LoginPerusahaan() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label htmlFor="companyPasswordInput" className="block text-xs font-bold text-slate-700">Kata Sandi Akun Perusahaan</label>
-                  <a href="#" onClick={(e) => { e.preventDefault(); alert('Hubungi administrator AYOKERJA! di support@ayokerja.id untuk pemulihan kredensial korporasi.'); }} className="text-[11px] font-semibold text-[#16B3A3] hover:underline">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFeedback({
+                        type: 'info',
+                        message: 'Hubungi administrator di support@ayokerja.id atau daftarkan perusahaan melalui tab "Daftar Perusahaan Baru".',
+                      })
+                    }
+                    className="text-[11px] font-semibold text-[#16B3A3] hover:underline"
+                  >
                     Bantuan Sandi?
-                  </a>
+                  </button>
                 </div>
-                <input
-                  id="companyPasswordInput"
-                  type="password"
-                  required
-                  value={companyPassword}
-                  onChange={(e) => setCompanyPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 focus:border-[#16B3A3] transition-all"
-                />
+                <div className="relative">
+                  <input
+                    id="companyPasswordInput"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={companyPassword}
+                    onChange={(e) => setCompanyPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-3.5 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 focus:border-[#16B3A3] transition-all"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Lihat kata sandi'}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                  >
+                    <i className={`fa-regular ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs`}></i>
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between text-xs pt-1">
@@ -176,15 +191,17 @@ export default function LoginPerusahaan() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2"
+                disabled={isSubmitting}
+                className="w-full py-3 rounded-xl bg-[#16B3A3] hover:bg-[#109485] disabled:opacity-60 text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2 flex items-center justify-center gap-2"
               >
-                Masuk ke Dashboard Perusahaan
+                {isSubmitting && <i className="fa-solid fa-spinner fa-spin"></i>}
+                <span>{isSubmitting ? 'Memverifikasi Akun...' : 'Masuk ke Dashboard Perusahaan'}</span>
               </button>
             </form>
           )}
 
           {activeTab === 'register' && (
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
+            <form onSubmit={(e) => { void handleRegisterSubmit(e); }} className="space-y-4">
               <div>
                 <label htmlFor="regCompanyName" className="block text-xs font-bold text-slate-700 mb-1.5">Nama Resmi Perusahaan / PT <span className="text-red-500">*</span></label>
                 <input
@@ -248,9 +265,10 @@ export default function LoginPerusahaan() {
                   id="regCompanyPasswordInput"
                   type="password"
                   required
+                  minLength={6}
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
-                  placeholder="Minimal 8 karakter aman"
+                  placeholder="Minimal 6 karakter aman"
                   className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 focus:border-[#16B3A3] transition-all"
                 />
               </div>
@@ -264,9 +282,11 @@ export default function LoginPerusahaan() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#00193F] hover:bg-[#0A2558] text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2"
+                disabled={isSubmitting}
+                className="w-full py-3 rounded-xl bg-[#00193F] hover:bg-[#0A2558] disabled:opacity-60 text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2 flex items-center justify-center gap-2"
               >
-                Daftarkan Perusahaan Sekarang
+                {isSubmitting && <i className="fa-solid fa-spinner fa-spin"></i>}
+                <span>{isSubmitting ? 'Mendaftarkan Perusahaan...' : 'Daftarkan Perusahaan Sekarang'}</span>
               </button>
             </form>
           )}
@@ -289,7 +309,7 @@ export default function LoginPerusahaan() {
       </main>
 
       <footer className="bg-[#00193F] text-slate-400 py-4 text-center text-xs border-t border-white/10">
-        &copy; 2026 AYOKERJA!. Portal Karir & Rekrutmen Terpadu Indonesia.
+        &copy; 2026 AYOKERJA!. Portal Karir &amp; Rekrutmen Terpadu Indonesia.
       </footer>
     </div>
   );

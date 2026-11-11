@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { safeSetStorageItem } from '../utils/storage';
+import {
+  authenticatePelamar,
+  registerPelamarAccount,
+} from '../utils/authService';
+import { AuthAlert } from '../components/AuthFeedback';
 
 export default function LoginPelamar() {
   const [searchParams] = useSearchParams();
@@ -11,6 +15,9 @@ export default function LoginPelamar() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -28,45 +35,62 @@ export default function LoginPelamar() {
   const { loginPelamar } = useAuth();
   const navigate = useNavigate();
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    const registeredUsers = JSON.parse(localStorage.getItem('ayokerja_registered_pelamar') || '{}');
-    const key = loginEmail.trim().toLowerCase();
-    const existing = registeredUsers[key];
-
-    loginPelamar({
-      nama: existing ? existing.nama : (loginEmail.includes('@') ? loginEmail.split('@')[0] : loginEmail),
-      email: existing ? existing.email : (loginEmail.includes('@') ? loginEmail : `${loginEmail}@ayokerja.id`),
-    });
-    alert(`Selamat Datang kembali! Mengarahkan ke halaman profil pelamar...`);
-    navigate('/profile');
+  const handleTabSwitch = (tab) => {
+    setActiveTab(tab);
+    setFeedback(null);
   };
 
-  const handleRegisterSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    const registeredUsers = JSON.parse(localStorage.getItem('ayokerja_registered_pelamar') || '{}');
-    const userData = {
-      nama: regFullName,
-      email: regEmail,
-      username: regUsername,
-    };
-    if (regEmail) registeredUsers[regEmail.trim().toLowerCase()] = userData;
-    if (regUsername) registeredUsers[regUsername.trim().toLowerCase()] = userData;
-    safeSetStorageItem('ayokerja_registered_pelamar', registeredUsers);
+    setFeedback(null);
+    setIsSubmitting(true);
 
-    alert(`Pendaftaran Akun Pelamar atas nama ${regFullName} Berhasil!\nSilahkan masuk pada halaman masuk untuk melanjutkan.`);
-    setLoginEmail(regEmail || regUsername);
-    setLoginPassword('');
-    setActiveTab('login');
+    try {
+      const account = await authenticatePelamar(loginEmail, loginPassword);
+      loginPelamar(account);
+      navigate('/profile');
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.message || 'Gagal memverifikasi akun pelamar. Silakan coba lagi.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    loginPelamar({
-      nama: 'Luthfi Ramadhan (Google Account)',
-      email: 'daniramadh47@gmail.com',
-    });
-    alert('Autentikasi Akun Google Berhasil! Mengarahkan ke halaman profil...');
-    navigate('/profile');
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setFeedback(null);
+    setIsSubmitting(true);
+
+    try {
+      const userData = await registerPelamarAccount({
+        username: regUsername,
+        fullName: regFullName,
+        email: regEmail,
+        passwordInput: regPassword,
+      });
+
+      setLoginEmail(userData.email || userData.username);
+      setLoginPassword('');
+      setRegUsername('');
+      setRegFullName('');
+      setRegEmail('');
+      setRegPassword('');
+      setActiveTab('login');
+      setFeedback({
+        type: 'success',
+        message: `Pendaftaran akun atas nama ${userData.nama} berhasil! Silakan masuk dengan kata sandi Anda.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.message || 'Pendaftaran akun gagal. Periksa kembali data Anda.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -99,7 +123,7 @@ export default function LoginPelamar() {
           <div className="flex p-1 bg-slate-100 rounded-2xl mb-6">
             <button
               type="button"
-              onClick={() => setActiveTab('login')}
+              onClick={() => handleTabSwitch('login')}
               className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'login' ? 'bg-white text-[#00193F] shadow-sm' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -108,7 +132,7 @@ export default function LoginPelamar() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('register')}
+              onClick={() => handleTabSwitch('register')}
               className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === 'register' ? 'bg-white text-[#00193F] shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -117,8 +141,10 @@ export default function LoginPelamar() {
             </button>
           </div>
 
+          <AuthAlert feedback={feedback} onDismiss={() => setFeedback(null)} />
+
           {activeTab === 'login' && (
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <form onSubmit={(e) => { void handleLoginSubmit(e); }} className="space-y-4">
               <div>
                 <label htmlFor="loginEmailPelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email atau Username</label>
                 <input
@@ -135,9 +161,18 @@ export default function LoginPelamar() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label htmlFor="loginPasswordPelamar" className="block text-xs font-bold text-slate-700">Kata Sandi</label>
-                  <a href="#" onClick={(e) => { e.preventDefault(); alert('Instruksi pemulihan kata sandi telah dikirim ke email terdaftar.'); }} className="text-[11px] font-semibold text-[#16B3A3] hover:underline">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFeedback({
+                        type: 'info',
+                        message: 'Gunakan akun yang sudah terdaftar atau buat akun baru melalui tab "Daftar Akun Baru".',
+                      })
+                    }
+                    className="text-[11px] font-semibold text-[#16B3A3] hover:underline"
+                  >
                     Lupa Sandi?
-                  </a>
+                  </button>
                 </div>
                 <div className="relative">
                   <input
@@ -151,6 +186,7 @@ export default function LoginPelamar() {
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Lihat kata sandi'}
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
                   >
@@ -168,15 +204,17 @@ export default function LoginPelamar() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2"
+                disabled={isSubmitting}
+                className="w-full py-3 rounded-xl bg-[#16B3A3] hover:bg-[#109485] disabled:opacity-60 text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2 flex items-center justify-center gap-2"
               >
-                Masuk Sekarang Sebagai Pelamar
+                {isSubmitting && <i className="fa-solid fa-spinner fa-spin"></i>}
+                <span>{isSubmitting ? 'Memverifikasi Akun...' : 'Masuk Sekarang Sebagai Pelamar'}</span>
               </button>
             </form>
           )}
 
           {activeTab === 'register' && (
-            <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+            <form onSubmit={(e) => { void handleRegisterSubmit(e); }} className="space-y-3.5">
               <div>
                 <label htmlFor="regUsernamePelamar" className="block text-xs font-bold text-slate-700 mb-1.5">Username Pelamar *</label>
                 <input
@@ -222,41 +260,28 @@ export default function LoginPelamar() {
                   id="regPasswordPelamar"
                   type="password"
                   required
+                  minLength={6}
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
-                  placeholder="Min. 8 karakter"
+                  placeholder="Min. 6 karakter"
                   className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#16B3A3]/20 focus:border-[#16B3A3] transition-all"
                 />
               </div>
 
               <div className="text-[11px] text-slate-500 pt-1 leading-relaxed">
-                Dengan mendaftar, Anda menyetujui <a href="#" className="text-[#16B3A3] underline">Syarat &amp; Ketentuan</a> serta Kebijakan Privasi platform AYOKERJA!.
+                Dengan mendaftar, Anda menyetujui Syarat &amp; Ketentuan serta Kebijakan Privasi platform AYOKERJA!.
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2"
+                disabled={isSubmitting}
+                className="w-full py-3 rounded-xl bg-[#16B3A3] hover:bg-[#109485] disabled:opacity-60 text-white font-bold text-xs sm:text-sm transition-colors shadow-sm mt-2 flex items-center justify-center gap-2"
               >
-                Daftar Akun Pelamar Sekarang
+                {isSubmitting && <i className="fa-solid fa-spinner fa-spin"></i>}
+                <span>{isSubmitting ? 'Mendaftarkan Akun...' : 'Daftar Akun Pelamar Sekarang'}</span>
               </button>
             </form>
           )}
-
-          <div className="relative my-6 text-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200"></div>
-            </div>
-            <span className="relative px-3 bg-white text-[11px] text-slate-400 font-medium">atau masuk dengan</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-2.5 transition-colors"
-          >
-            <img src="/assets/company-google.png" alt="Google" className="w-4 h-4 object-contain" />
-            Lanjutkan dengan Google
-          </button>
 
           <div className="mt-6 pt-5 border-t border-slate-100 text-center space-y-2">
             <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
@@ -275,7 +300,7 @@ export default function LoginPelamar() {
       </main>
 
       <footer className="bg-[#00193F] text-slate-400 py-4 text-center text-xs border-t border-white/10">
-        &copy; 2026 AYOKERJA!. Portal Karir & Rekrutmen Terpadu Indonesia.
+        &copy; 2026 AYOKERJA!. Portal Karir &amp; Rekrutmen Terpadu Indonesia.
       </footer>
     </div>
   );

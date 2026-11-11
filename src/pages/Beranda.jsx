@@ -119,59 +119,59 @@ export default function Beranda() {
     },
     {
       id: 6,
-      title: 'E-Commerce Growth & Ads Lead',
-      company: 'PT Amazon Services Indonesia',
-      logo: '/assets/company-amazon.png',
-      category: 'Cloud & Infra',
+      title: 'Industrial IoT Specialist',
+      company: 'PT Astra International Tbk',
+      logo: '/assets/png-clipart-daihatsu-sigra-astra-international-indonesia-car-car-text-logo-thumbnail.png',
+      category: 'AI & Software',
       tags: [
-        { label: 'Digital Marketing', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
+        { label: 'Software & IoT', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
         { label: 'Full-time', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
-        { label: 'Rp 15 - 22 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
+        { label: 'Rp 20 - 32 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
       ],
-      desc: 'Memimpin strategi kemitraan merchant marketplace, optimasi performa campaign iklan digital, analitik konversi data penjualan ritel e-commerce.',
-      location: 'Jakarta Barat',
+      desc: 'Mengembangkan sistem otomasi manufaktur, konektivitas sensor Industrial IoT, serta analitik data armada otomotif nasional.',
+      location: 'Semarang, Jawa Tengah',
     },
     {
       id: 7,
-      title: 'Regional Supply Chain Lead',
-      company: 'PT Kalla Logistics Nusantara',
-      logo: '/assets/company-google.png',
-      category: 'Operations & F&B',
+      title: 'Senior Core Banking & Security Engineer',
+      company: 'PT Bank Central Asia Tbk (BCA)',
+      logo: '/assets/bca-bank-central-asia.png',
+      category: 'AI & Software',
       tags: [
-        { label: 'Supply Chain', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
-        { label: 'Full-time', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
-        { label: 'Rp 18 - 28 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
+        { label: 'Fintech & Security', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
+        { label: 'Hybrid', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
+        { label: 'Rp 24 - 38 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
       ],
-      desc: 'Mengawasi distribusi logistik regional kawasan timur Indonesia, efisiensi pergudangan, dan kemitraan rantai pasok niaga.',
-      location: 'Makassar, Sulawesi Selatan',
+      desc: 'Merancang sistem keamanan perbankan digital transaksi tinggi, enkripsi layanan pembayaran, serta arsitektur core banking.',
+      location: 'Jakarta Pusat',
     },
     {
       id: 8,
-      title: 'Creative Brand & Design Lead',
-      company: 'PT Bali Digital Media',
-      logo: '/assets/company-adobe.png',
+      title: 'Product & E-Commerce Ecosystem Lead',
+      company: 'PT GoTo Gojek Tokopedia Tbk',
+      logo: '/assets/GOTO.JK.png',
       category: 'UI/UX Design',
       tags: [
-        { label: 'Creative Design', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
-        { label: 'Full-time', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
-        { label: 'Rp 16 - 24 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
+        { label: 'Product & Design', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
+        { label: 'Hybrid', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
+        { label: 'Rp 26 - 42 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
       ],
-      desc: 'Merancang identitas visual, materi kampanye kreatif destinasi pariwisata internasional, dan portofolio aset digital studio.',
-      location: 'Denpasar, Bali',
+      desc: 'Memimpin pengembangan fitur ekosistem digital on-demand, marketplace, dan integrasi pembayaran digital berskala nasional.',
+      location: 'Jakarta Selatan',
     },
     {
       id: 9,
-      title: 'Senior Frontend React Engineer',
-      company: 'PT Global Solusi Digital',
-      logo: '/assets/company-google.png',
-      category: 'AI & Software',
+      title: 'Network Infrastructure & Cloud Engineer',
+      company: 'PT Telkom Indonesia (Persero) Tbk',
+      logo: '/assets/png-clipart-telkom-indonesia-telekomunikasi-seluler-di-indonesia-telecommunication-telkom-office-branch-pakem-telkom-text-logo.png',
+      category: 'Telecommunication',
       tags: [
-        { label: 'Software Engineering', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
-        { label: 'Remote', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
-        { label: 'Rp 22 - 35 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
+        { label: 'Telecom & Cloud', bg: 'bg-[#CCFBF1]', text: 'text-[#16B3A3]' },
+        { label: 'Full-time', bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]' },
+        { label: 'Rp 20 - 34 Juta', bg: 'bg-slate-100', text: 'text-slate-700' },
       ],
-      desc: 'Membangun aplikasi single-page application berkinerja tinggi menggunakan React, Tailwind CSS, dan standardisasi clean architecture.',
-      location: 'Remote',
+      desc: 'Mengelola infrastruktur jaringan pita lebar nasional, pusat data cloud enterprise, dan konektivitas telekomunikasi nusantara.',
+      location: 'Bandung, Jawa Barat',
     },
   ];
 
@@ -723,7 +723,7 @@ export default function Beranda() {
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <img
-                    src="/assets/company-amazon.png"
+                    src="/assets/stripe-logo-png_seeklogo-290635.png"
                     alt="Stripe Payments Inc."
                     className="w-12 h-12 rounded-xl object-contain p-1.5 bg-slate-50 border border-slate-200"
                   />

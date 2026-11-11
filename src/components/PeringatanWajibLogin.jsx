@@ -30,15 +30,7 @@ export default function PeringatanWajibLogin({
           <i className="fa-solid fa-xmark text-sm"></i>
         </button>
 
-        <div className="w-16 h-16 rounded-2xl bg-[#CCFBF1] text-[#16B3A3] flex items-center justify-center mx-auto mb-4 border border-[#99F6E4] shadow-sm">
-          {actionType === 'save' ? (
-            <i className="fa-solid fa-bookmark text-2xl"></i>
-          ) : (
-            <i className="fa-solid fa-user-lock text-2xl"></i>
-          )}
-        </div>
-
-        <h3 className="text-xl font-extrabold text-[#00193F] mb-2">{title}</h3>
+        <h3 className="text-xl font-extrabold text-[#00193F] mb-3 pt-2 px-6">{title}</h3>
 
         {jobTitle && companyName ? (
           <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 mb-4 text-left">
@@ -63,7 +55,6 @@ export default function PeringatanWajibLogin({
             }}
             className="w-full py-3 px-4 rounded-xl bg-[#16B3A3] hover:bg-[#109485] text-white font-bold text-xs sm:text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
           >
-            <i className="fa-solid fa-right-to-bracket text-xs"></i>
             Masuk Akun Pelamar Sekarang
           </button>
 
@@ -75,7 +66,6 @@ export default function PeringatanWajibLogin({
             }}
             className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2"
           >
-            <i className="fa-solid fa-user-plus text-xs"></i>
             Belum Punya Akun? Daftar Baru
           </button>
 

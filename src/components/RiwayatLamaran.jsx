@@ -23,10 +23,7 @@ export default function RiwayatLamaran({
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
       {appliedJobs.length === 0 ? (
         <div className="p-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-200 text-[#16B3A3] mx-auto flex items-center justify-center text-2xl mb-3 shadow-sm">
-            <i className="fa-solid fa-clipboard-check"></i>
-          </div>
-          <h3 className="text-base font-bold text-[#00193F] mb-1">
+          <h3 className="text-base font-bold text-[#00193F] mb-1.5">
             Belum Ada Riwayat Lamaran
           </h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto mb-5 leading-relaxed">
@@ -35,9 +32,9 @@ export default function RiwayatLamaran({
           <button
             type="button"
             onClick={onExplore}
-            className="px-5 py-2.5 rounded-lg bg-[#16B3A3] text-white font-semibold text-xs hover:bg-[#109485] transition-all shadow-sm inline-flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-lg bg-[#16B3A3] text-white font-semibold text-xs hover:bg-[#109485] transition-all shadow-sm inline-flex items-center justify-center cursor-pointer"
           >
-            <i className="fa-solid fa-compass"></i> Jelajahi Semua Lowongan
+            Jelajahi Semua Lowongan
           </button>
         </div>
       ) : filteredAppliedJobs.length === 0 ? (

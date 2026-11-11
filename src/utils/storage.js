@@ -4,6 +4,13 @@
  * dengan validasi tipe, pembersihan karakter berbahaya, dan penanganan error.
  */
 
+const BLOCKED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+function sanitizeKey(key) {
+  const cleaned = String(key).replace(/[^\w@.-]/g, '');
+  return BLOCKED_KEYS.has(cleaned) ? '' : cleaned;
+}
+
 export function sanitizeStorageInput(data) {
   if (data === null || data === undefined) return data;
   if (typeof data === 'string') {
@@ -19,8 +26,10 @@ export function sanitizeStorageInput(data) {
   if (typeof data === 'object') {
     const cleanObj = {};
     for (const [key, val] of Object.entries(data)) {
-      const cleanKey = String(key).replace(/[^\w-]/g, '');
-      cleanObj[cleanKey] = sanitizeStorageInput(val);
+      const cleanKey = sanitizeKey(key);
+      if (cleanKey) {
+        cleanObj[cleanKey] = sanitizeStorageInput(val);
+      }
     }
     return cleanObj;
   }
@@ -29,7 +38,8 @@ export function sanitizeStorageInput(data) {
 
 export function safeSetStorageItem(key, value) {
   try {
-    const cleanKey = String(key).replace(/[^\w-]/g, '');
+    const cleanKey = sanitizeKey(key);
+    if (!cleanKey) return;
     const cleanValue = sanitizeStorageInput(value);
     const serialized = typeof cleanValue === 'string' ? cleanValue : JSON.stringify(cleanValue);
     localStorage.setItem(cleanKey, serialized);
@@ -40,7 +50,8 @@ export function safeSetStorageItem(key, value) {
 
 export function safeGetStorageItem(key, defaultValue = null) {
   try {
-    const cleanKey = String(key).replace(/[^\w-]/g, '');
+    const cleanKey = sanitizeKey(key);
+    if (!cleanKey) return defaultValue;
     const item = localStorage.getItem(cleanKey);
     if (!item) return defaultValue;
     try {
@@ -53,4 +64,3 @@ export function safeGetStorageItem(key, defaultValue = null) {
     return defaultValue;
   }
 }
-

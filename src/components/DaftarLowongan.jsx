@@ -17,7 +17,6 @@ export default function DaftarLowongan({
       {jobs.length === 0 ? (
         activeTab === 'saved' ? (
           <PesanKosong
-            icon="fa-bookmark text-amber-400"
             title="Belum Ada Lowongan Tersimpan"
             description="Anda belum menandai lowongan pekerjaan ke daftar favorit. Klik ikon bookmark pada daftar untuk menyimpannya."
             showAction={true}
@@ -26,7 +25,6 @@ export default function DaftarLowongan({
           />
         ) : (
           <PesanKosong
-            icon="fa-briefcase"
             title="Belum ada data lowongan"
             description="Tidak ada lowongan yang sesuai dengan kriteria pencarian atau filter yang Anda pilih."
           />

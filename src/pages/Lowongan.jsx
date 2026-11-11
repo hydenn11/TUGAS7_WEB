@@ -8,10 +8,10 @@ const GLOBAL_METAS = [
   { company: 'Adobe Creative Cloud', logo: '/assets/company-adobe.png', location: 'Remote (San Jose, CA)', category: 'Product Design', salary: '$4,800 - $6,700 / bln' },
   { company: 'SpaceX Starlink Tech', logo: '/assets/company-spacex.png', location: 'Remote (Hawthorne, CA)', category: 'Infrastruktur & Jaringan', salary: '$6,500 - $9,200 / bln' },
   { company: 'Burger King Global Tech', logo: '/assets/company-burgerking.png', location: 'Remote (Miami, FL)', category: 'Data & Analytics', salary: '$4,200 - $6,000 / bln' },
-  { company: 'Spotify International', logo: '/assets/company-google.png', location: 'Remote (Stockholm, Swedia)', category: 'Software Engineering', salary: '$5,200 - $7,400 / bln' },
-  { company: 'Stripe Payments Inc.', logo: '/assets/company-amazon.png', location: 'Remote (Dublin, Irlandia)', category: 'Cybersecurity', salary: '$6,200 - $8,800 / bln' },
-  { company: 'Shopify Commerce Global', logo: '/assets/company-adobe.png', location: 'Remote (Ottawa, Kanada)', category: 'Product & Engineering', salary: '$5,000 - $7,100 / bln' },
-  { company: 'Atlassian Global Network', logo: '/assets/company-spacex.png', location: 'Remote (Sydney, Australia)', category: 'Cloud & DevOps', salary: '$5,800 - $8,000 / bln' },
+  { company: 'GoTo Global Tech', logo: '/assets/GOTO.JK.png', location: 'Remote (Jakarta & Singapura)', category: 'Software Engineering', salary: '$5,200 - $7,400 / bln' },
+  { company: 'Stripe Payments Inc.', logo: '/assets/stripe-logo-png_seeklogo-290635.png', location: 'Remote (Dublin, Irlandia)', category: 'Cybersecurity', salary: '$6,200 - $8,800 / bln' },
+  { company: 'Shopify Commerce Global', logo: '/assets/png-transparent-shopify-hd-logo.png', location: 'Remote (Ottawa, Kanada)', category: 'Product & Engineering', salary: '$5,000 - $7,100 / bln' },
+  { company: 'Atlassian Global Network', logo: '/assets/png-transparent-atlassian-full-logo-tech-companies.png', location: 'Remote (Sydney, Australia)', category: 'Cloud & DevOps', salary: '$5,800 - $8,000 / bln' },
 ];
 
 import HeaderLowongan from '../components/HeaderLowongan';

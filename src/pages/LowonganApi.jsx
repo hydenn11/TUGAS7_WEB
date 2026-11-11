@@ -46,16 +46,16 @@ const GLOBAL_COMPANIES = [
     level: 'Mid Level',
   },
   {
-    name: 'Spotify International',
-    logo: '/assets/company-google.png',
-    location: 'Remote (Stockholm, Swedia)',
+    name: 'GoTo Global Tech',
+    logo: '/assets/GOTO.JK.png',
+    location: 'Remote (Jakarta & Singapura)',
     category: 'Software Engineering',
     salary: '$5,200 - $7,400 / bln',
     level: 'Senior Level',
   },
   {
     name: 'Stripe Payments Inc.',
-    logo: '/assets/company-amazon.png',
+    logo: '/assets/stripe-logo-png_seeklogo-290635.png',
     location: 'Remote (Dublin, Irlandia)',
     category: 'Cybersecurity & Fintech',
     salary: '$6,200 - $8,800 / bln',
@@ -63,7 +63,7 @@ const GLOBAL_COMPANIES = [
   },
   {
     name: 'Shopify Commerce Global',
-    logo: '/assets/company-adobe.png',
+    logo: '/assets/png-transparent-shopify-hd-logo.png',
     location: 'Remote (Ottawa, Kanada)',
     category: 'Product & Engineering',
     salary: '$5,000 - $7,100 / bln',
@@ -71,7 +71,7 @@ const GLOBAL_COMPANIES = [
   },
   {
     name: 'Atlassian Global Network',
-    logo: '/assets/company-spacex.png',
+    logo: '/assets/png-transparent-atlassian-full-logo-tech-companies.png',
     location: 'Remote (Sydney, Australia)',
     category: 'Cloud & DevOps',
     salary: '$5,800 - $8,000 / bln',
