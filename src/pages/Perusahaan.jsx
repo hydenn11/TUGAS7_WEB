@@ -45,10 +45,6 @@ export default function Perusahaan() {
     <div className="min-h-screen bg-[#F8FAFC] pb-16 flex flex-col">
       <section className="w-full bg-gradient-to-r from-[#00193F] to-[#16B3A3] pt-12 pb-16 px-4 text-center text-white shadow-md mb-8">
         <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-teal-200 mb-3 border border-white/20">
-            <i className="fa-solid fa-handshake"></i>
-            <span>Jaringan Mitra Resmi AYOKERJA!</span>
-          </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-3">
             Daftar Mitra <span className="text-[#99F6E4]">Perusahaan</span>
           </h1>
