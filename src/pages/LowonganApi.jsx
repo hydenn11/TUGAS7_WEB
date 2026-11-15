@@ -409,9 +409,6 @@ export default function LowonganApi() {
 
         {!loading && error && (
           <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl p-8 border border-rose-100 shadow-sm text-center space-y-5 animate-in fade-in duration-200">
-            <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 border border-rose-200 flex items-center justify-center mx-auto text-2xl">
-              <i className="fa-solid fa-triangle-exclamation"></i>
-            </div>
             <div>
               <h2 className="text-xl font-extrabold text-[#00193F]">
                 Gagal Memuat Data Lowongan
